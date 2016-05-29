@@ -1,0 +1,66 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="../styles.css">
+		<link rel="stylesheet" type="text/css" href="../styles_page.css">
+	</head>
+	<body>
+		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+		<div class="container">
+			<div class="column">
+				<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+				<div class="row">
+					<a href="http://lovell.ipage.com/software" class="name">Jack Lovell</a>
+					<div class="subname">San Diego, CA</div>
+				</div>
+				<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+				<div class="row">
+					<div class="title">
+						Network Programs
+					</div>
+					<div class="subtitle">
+						JavaScript, D3.js, HTML, CSS
+					</div>
+					<div class="smallbreak"></div>
+					This is an experiment in which I modify genetic programs to have a network or graph structure that allows recursion. I call them "Network Programs".
+					<div class="image">
+						<iframe src="https://player.vimeo.com/video/153575000?autoplay=1&loop=1" width="700" height="518" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+						<div class="caption">
+							Manipulating constraints in D3's force-directed network layout.
+						</div>
+					</div>
+					<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+					<div class="break"></div>
+					<div class="heading">
+						Details and Implementation
+					</div>
+					Genetic programs were originally implemented as trees where the computation enters at the root and flows out to the tip of each branch in turn, until the entire tree is traversed and the computation is complete.
+					<div class="break"></div>
+					In Network Programs a node can have any other node as a child, allowing the computation to loop back around and reenter itself at any point.
+					<div class="break"></div>
+					Infinite loops become possible and are stopped by a computation maximum depth limit. Once the computation has descended through the maximum allowed number of children, the final node, if it is not a terminal itself, will be evaluated using an attached "leaf" node which is always a terminal with no children. Each node in the network has its own personal leaf node for cases where it becomes the final node in a max depth evaluation. 
+					<div class="break"></div>
+					Black nodes display their function, e.g. "pow" where the first child is raised to the power of the second child, or "neg" which negates the value of its only child. The single green node is the root, where the computation initially enters the network. Leaf nodes are shown as smaller red circles attached to each node.
+					<div class="break"></div>
+					Sliders are connected to some of the constraints in D3's force directed graph layout to test different values.
+					<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+					<div class="image">
+						<img src="images/np network 2 gray.jpg">
+						<div class="caption">
+							A Network Program.
+						</div>
+					</div>
+					<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+					<div class="break"></div>
+					The output of the Network Program is displayed in a graph. The Network Program is like a genotype, and the graph is the resulting animal or phenotype. Often the result is an interesting and unusual curve that appears to have a particular aesthetic style, like a personality.
+					<div class="image">
+						<img src="images/graph 1 grid.jpg">
+						<div class="caption">
+							A graph showing the output of one Network Program; y values are calculated for a set of input x values. This Network Program appears to be attempting a Dr. Seuss drawing.
+						</div>
+					</div>
+					<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

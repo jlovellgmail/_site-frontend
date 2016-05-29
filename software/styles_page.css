@@ -1,0 +1,45 @@
+.column {
+	width: 700px;
+	text-align: left;
+	line-height: 20px;
+	/*
+	font-family: courier;
+	letter-spacing: .4px;
+	font-size: 15px;
+	*/
+}
+.row {
+	text-align: justify;
+	width: 700px;
+}
+.break {
+	margin-top: 20px;
+}
+.largebreak {
+	margin-top: 40px;
+}
+.caption {
+	font-family: sans-serif;
+	font-style: normal;
+	font-size: 12px;
+	color: rgba(0,0,0, .8);
+	margin-top: 8px;
+	line-height: initial;
+}
+.title-in-caption {
+	font-style: italic;
+}
+.heading {
+	font-weight: bold;
+	font-size: 17px;
+	margin-top: 60px;
+	margin-bottom: 10px;
+	font-family: sans-serif;
+}
+.image {
+	margin-top: 20px;
+	margin-bottom: 40px;
+}
+a.embeddedlink {
+	color: blue;
+}

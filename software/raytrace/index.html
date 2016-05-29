@@ -1,0 +1,270 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="../styles.css">
+		<link rel="stylesheet" type="text/css" href="../styles_page.css">
+	</head>
+	<body>
+		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+		<div class="container">
+			<div class="column">
+				<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+				<div class="row">
+					<a href="http://lovell.ipage.com/software" class="name">Jack Lovell</a>
+					<div class="subname">San Diego, CA</div>
+				</div>
+				<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+				<div class="row">
+					<div class="title">
+						Raytracer
+					</div>
+					<div class="subtitle">
+						C++
+					</div>
+					<div class="smallbreak"></div>
+					A basic 3D rendering system written from scratch.
+					<div class="image">
+						<a href="images/dof2.jpg"><img src="images/dof2_700.jpg"></a>
+						<div class="caption">
+							Shallow focus.
+						</div>
+					</div>
+					<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+					<div class="break"></div>
+					<div class="heading">
+						Details and Implementation
+					</div>
+					Capabilities include shallow depth of field, texture mapping, reflection, refraction and antialiasing.
+					<div class="break"></div>
+					<div>
+							<b>Overview</b><br />
+                            <br />
+                            This program implements rendering of spheres and polygons, recursive
+                            reflections, refraction within transparent objects, texture mapping, antialiasing,
+                            and depth of field blurring.<br />
+                            <br />
+                            A <b>world</b> object contains linked lists to objects, lights, and all
+                            other information. All variable information about the scene is read from
+                            an input file, including both a physical description and information about
+                            how to render the scene (depth of field, antialiasing, shadows, etc).
+                            Once all the data structures are set up, the main loop is called - <b>calcImage</b>
+                            (outlined below). the returned image object, which contains an array of
+                            all pixels is written to disk in the TARGA format.<br />
+                            <br />
+                            <br />
+                            <b>Platform and Compiler</b><br />
+                            <br />
+                            This code was developed in Microsoft Visual C++ compiler on a PC with
+                            windows 95.<br />
+                            <br />
+                            <br />
+                            <br />
+                            <h2><b>Primary Functions</b></h2>
+                            <br />
+                            <b>calcImage()</b><br />
+                            <br />
+                            The main loop casts rays from the camera to each
+                            cell in the view window. Each cell represents a pixel in the final image.
+                            Multiple rays may be cast through each pixel for antialiasing or depth
+                            of field blurring (these techniques are outlined below). Once a ray is
+                            created from the camera to a cell, the ray is sent to a recursive <b>Trace</b>
+                            function (outlined below). Trace returns a vector in color space with
+                            values for R G and B channels for a pixel that corresponds to the cell through
+                            which we traced the initial ray. The pixel is copied into a pixel buffer
+                            object (an array of all pixels). Once rays have been traced for all cells
+                            in the view window, the function returns the pixel buffer object.<br />
+                            <br />
+                            <br />
+                            <b>Trace()</b><br />
+                            <br />
+                            Trace sends the ray to a <b>findClosestIntersection</b> function (outlined
+                            below), which returns an intersection object. The intersection object
+                            contains the coordinates of the intersection, a normal (to intersected
+                            surface) vector, and a unit vector that points from the intersection
+                            point to the camera. The intersection object is sent to <b>calcIntensity</b>
+                            function (outlined below), which calculates the local illumination of
+                            the point (the illumination due only to light hitting the point directly
+                            from a light source). Next, the intersected object is checked for transparency.
+                            If it is transparent, a new ray is calculated, based on the angle at
+                            which the ray hits the object surface and the index of refraction of
+                            the object. The Formula used is as follows:<br />
+                            <br />
+                            <b>calculate refracted ray</b><br />
+                            r= the object's index of refraction<br />
+                            <br />
+                            get the angle at which the ray hits the object surface<br />
+                            c1 = dot product of n and v (n is the normal to object surface at
+                            intersection, v is the unit vector from the intersection point to
+                            the viewpoint)<br />
+                            c2 = sqrt( 1 - (1/n)&sup2; * (1 - (c1)&sup2;) )<br />
+                            <br />
+                            the new vector will be -1/r * (v + (1/r*c1 - c2) * n<br />
+                            move this new vector to the intersection point.<br />
+                            <br />
+                            Trace calls itself on this new ray, sending along a flag indicating
+                            that the ray is inside an object. The flag tells trace that when it
+                            finds an intersection (with the other side of the object), to refract
+                            the ray back (the opposite of the refraction when the ray entered the
+                            object from space). If trace receives this flag, it just calculates
+                            a new ray out of the object and calls itself on this new ray. (it does
+                            this using the formula above, but uses the inverse of the index of refraction)
+                            It doesn't calculate any local illumination for that intersection point.
+                            All the illumination will come from the next objet the ray hits. Next
+                            trace checks to make sure the maximum number of recursions (maximum
+                            reflection depth) has not been reached for this ray, and if not, calculates
+                            a reflected ray as follows:<br />
+                            <br />
+                            <b>calculate reflected ray</b><br />
+                            n = normal to object surface at intersection<br />
+                            v = unit vector from intersection point to view<br />
+                            p = coordinate of intersection<br />
+                            <br />
+                            new ray = 2n*(n dot v) - v + p<br />
+                            <br />
+                            Trace calls itself on this new ray. The values calculated due to reflection,
+                            refraction and local illumination are weighted by the opacity of the
+                            object. Finally, the values returned from any calls trace makes to itself
+                            are added to the local illumination that <b>calcIntensity</b> returned,
+                            and this final sum is returned.<br />
+                            <br />
+                            <br />
+                            <b>findClosestIntersection()</b><br />
+                            <br />
+                            findClosestIntersection takes a ray and loops through all objects,
+                            finds intersections with these objects, and saves the closest intersection
+                            (to camera) that it's found so far as it goes along. The intersection
+                            object contains the coordinates of the intersection, a normal (to intersected
+                            surface) vector, a unit vector that points from the intersection point
+                            to the camera, a pointer to the intersected object, and the parametric
+                            coordinate of the intersection along the ray. <br />
+                            <br />
+                            <b>check for ray/sphere intersection:</b><br />
+                            <br />
+                            (l, m, n) = location of sphere<br />
+                            r = radius of sphere<br />
+                            (x1, y1, z1) - (x2, y2, z2) = start and end points of ray<br />
+                            i, j, k = dx, dy, dz (changes in x y and z values between ray start
+                            and end points)<br />
+                            <br />
+                            calculate coefficients of quadratic equation (the solution of which,
+                            if it exists, is equal to the parametric coordinate along the ray
+                            of the intersection):<br />
+                            a = i&sup2; + j&sup2; + k&sup2;<br />
+                            b = 2(i(x1-l) + j(y1-m) + k(z1-n))<br />
+                            c = l&sup2; + m&sup2; + n&sup2; + x1&sup2; + y1&sup2; + z1&sup2;
+                            - 2( (l*x1) + (m*y1) + (n*z1) ) - r&sup2;<br />
+                            <br />
+                            a, b, and c are sent to a function <b>solveQuadratic()</b> which
+                            uses the quadratic equation ( -b &plusmn; sqrt(b&sup2;-4ac) ) /
+                            2a to find solutions. <br />
+                            <br />
+                            if solutions are found, the lesser one (the one closer to the camera
+                            along ray) is returned. <br />
+                            <br />
+                            <b>check for ray/triangle intersection:</b><br />
+                            <br />
+                            (tx1, ty1, tz1), (tx2, ty2, tz2), (tx3, ty3, tz3) = triangle vertices<br />
+                            <br />
+                            calculate coefficients of the equation of the plane that contains
+                            the 3 vertices of the triangle<br />
+                            a = ty1*(tz2 - tz3) + ty2*(tz3 - tz1) + ty3*(tz1 - tz2)<br />
+                            b = tz1*(tx2 - tx3) + tz2*(tx3 - tx1) + tz3*(tx1 - tx2)<br />
+                            c = tx1*(ty2 - ty3) + tx2*(ty3 - ty1) + tx3*(ty1 - ty2)<br />
+                            d = -( tx1*(ty2*tz3-ty3*tz2) + tx2*(ty3*tz1-ty1*tz3) + tx3*(ty1*tz2-ty2*tz1) )<br />
+                            <br />
+                            (a*x1 + b*y1 + c*z1 + d) / (a*i + b*j + c*k) = the parametic coordinate
+                            of the ray/plane intersection point. If (a*i + b*j + c*k) = 0, there
+                            is no intersection.<br />
+                            <br />
+                            to determine if the intersection point is contained within the
+                            triangle, use dot product to find the angles between vectors from
+                            the point out to each vertex. If the sum of these angles = 360 degrees,
+                            the point is contained, and the parametic coordinate is returned.<br />
+                            <br />
+                            The value of t is returned. If no intersections are found, t = -1 is 
+                            returned (which tells trace that no intersection was found).<br />
+                            <br />
+                            <br />
+                            <b>calcIntensity()</b><br />
+                            <br />
+                            calcIntensity takes an intersection object and loops through all lights 
+                            in the scene, using the phong lighting model to calculate local illumination. 
+                            The contribution of each light is added into an accumulator and the final 
+                            RGB value is returned. The phong model is as follows:<br />
+                            <br />
+                            <b>calculate local illumination of a point using phong model</b><br />
+                            <br />
+                            l = unit vector pointing to light source<br />
+                            v = unit vector pointing to viewpoint (where ray was cast from)<br />
+                            h = unit vector in the direction of (l + v)/2<br />
+                            ks, kd = fraction of energy reflected specularly and diffusely, respectively<br />
+                            a = ambient light, which is represented by a constant<br />
+                            n represents the tightness of the specular highlight. The higher the 
+                            value the smaller and more intense the highlight.<br />
+                            <br />
+                            add the 3 terms (ambient, specular, diffuse)<br />
+                            a*lambda + lambda*kd(l dot n) + ks(n dot h)^n = intensity for each of 
+                            R, G, and B values of lambda<br />
+                            <br />
+                            <br />
+                            <br />
+                            <h2><b>Additional Functionality</b></h2>
+                            <br />
+                            <b>Antialiasing</b><br />
+                            <br />
+                            Accomplished by supersampling each pixel (casting multiple 
+                            rays within each pixel and using the average for the final pixel intensity). 
+                            The pixel is divided up into an n+1 by n+1 grid, where n is the amount 
+                            of antialiasing to be applied. if n=0, the pixel is 1x1, and no antialiasing 
+                            is applied. <br />
+                            <br />
+                            From the first row, a random cell is chosen, and a ray is traced through 
+                            the center of this cell, and the intensity returned is added into an 
+                            accumulator. For each subsequent row, a random cell is chosen, and if 
+                            that cell lies in a column where another cell has already been sampled, 
+                            another cell is chosen, and this continues until a cell is chosen that 
+                            lies in a column that doesn't already contain any used cells. At the 
+                            end, each column will contain only 1 sampled cell. This method insures 
+                            that the supersampled pixels are random, but at the same time sufficiently 
+                            spread out so as to get values from the whole area of the pixel and 
+                            create a more accurate average of the whole intensity of the pixel.<br />
+                            <br />
+                            <br />
+                            <b>Shallow Focus</b><br />
+                            <br />
+                            Accomplished by applying jitter to the position 
+                            of the camera. The pin hole camera that is implemented normally has 
+                            no focal length (it is focused at all distances) because it is not a 
+                            lens that causes light that travels through it to converge at a certain 
+                            distance. To simulate a lens, we use the same principal as for antialiasing: 
+                            take the average of a finite number of random samples. In this case, 
+                            we want to use a gaussian (normally) distributed random variable. This 
+                            causes the number of samples taken to be much greater closer to the 
+                            actual camera position, and less and less the farther away you get. 
+                            This should provide realistic object blurring effects (the object gets 
+                            fainter at pixels farther away from it's actually pinhole camera extent).<br />
+                            <br />
+                            To generate a random variable with normal distribution, we take the 
+                            average of a number of instances of a random variable with uniform distribution. 
+                            Assuming that d is our random variable with normal distribution, we 
+                            can calculate jittered position of a lens sample on a circle (we want 
+                            uniform distribution of direction away from camera point, normal distribution 
+                            of length):<br />
+                            <br />
+                            assume the camera is aimed strait down the z axis<br />
+                            n = random variable with normal distribution, ranging from -1 to 1, 
+                            centered on 0<br />
+                            r = radius of lens<br />
+                            <br />
+                            dx and dy displacements along x and y axes<br />
+                            dx = n*r<br />
+                            dy = dy*( sqrt( r&sup2; - (dx)&sup2; ) )<br />
+                            <br />
+                            these values are added to the camera position, and that position is 
+                            used as the camera position for that sample<br />
+					</div>
+					<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

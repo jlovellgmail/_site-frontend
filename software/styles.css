@@ -1,0 +1,86 @@
+body {
+	font-family: sans-serif;
+	font-size: 14px;
+	text-align: center;
+	margin: 0;
+	margin-bottom: 100px;
+}
+a {
+	text-decoration: none;
+	color: inherit;
+}
+a:visited {
+	color: inherit;
+}
+.pagelink {
+    color: rgba(0,150,255, 1);
+}
+a:visited.pagelink {
+    color: rgba(0,150,255, 1);
+}
+.thumbscol {
+	display: inline-block;
+}
+.textcol {
+	display: inline-block;
+	width: 400px;
+	margin-left: 40px;
+	text-align: left;
+	vertical-align: top;
+}
+.thumbnail {
+}
+.row {
+	position: relative;
+	padding: 20px;
+	text-align: left;
+}
+.smallbreak {
+	margin-bottom: 10px;
+}
+.overlay {
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color: black;
+}
+a:hover.overlay {
+	opacity: .03;
+}
+.container {
+	display: inline-block;
+	margin-top: 10px;
+	width: 924px;
+	line-height: 20px;
+	/*	
+	font-family: courier;
+	letter-spacing: .1px;
+	font-size: 15px;
+	*/
+}
+.name {
+	font-weight: bold;
+	font-size: 15px;
+	font-family: sans-serif;
+	letter-spacing: 0;
+}
+.subname {
+	font-size: 13px;
+	font-family: sans-serif;
+	letter-spacing: 0;
+}
+.title {
+	font-family: sans-serif;
+	font-size: 24px;
+	font-weight: bold;
+}
+.subtitle {
+	font-family: sans-serif;
+	margin-top: 20px;
+	font-size: 15px;
+	font-weight: normal;
+	color: orange;
+}

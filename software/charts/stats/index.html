@@ -1,0 +1,273 @@
+﻿<html>
+<head></head>
+<body>
+
+    <style>
+
+        .well {
+            min-height: 20px;
+            padding: 19px;
+            margin-bottom: 20px;
+            background-color: #f5f5f5;
+            border: 1px solid #e3e3e3;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+            width: 900px;
+        }
+        text {
+            font-family: 'Helvetica','Arial',sans-serif;
+            //fill: #666;
+        }
+        #id_platform {
+            text-align: left;
+        }
+        body {
+            font-size: 14px;
+            line-height: 1.42857143;
+        }
+
+
+
+
+
+
+
+        .rangeslider_cursor {
+            fill: rgba(0,0,0, 1);
+            stroke: none;
+        }
+
+        .rangeslider_axis {
+            shape-rendering: cripsEdges;
+        }
+
+        .rangeslider_axis path {
+            //stroke: rgba(255,0,0, 1);
+            stroke: none;
+            fill: none;
+        }
+
+        .rangeslider_axis line {
+            stroke: rgba(0,0,0, .25);
+            fill: none;
+        }
+
+        .rangeslider_axis text {
+            font-family: sans-serif;
+            font-size: 8px;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            //stroke: none;
+            stroke: #333;
+            opacity: 1;
+            shape-rendering: cripsEdges;
+        }
+
+        .axis text {
+            font-family: sans-serif;
+            font-size: 8px;
+        }
+
+        .axis minor {
+            //stroke-opacity: 1;
+            stroke: #333;
+            opacity: 1;
+        }
+
+        .manual_axis {
+            font-family: sans-serif;
+            font-size: 8px;
+        }
+
+
+        .axis_slider_generic {
+            fill: none;
+            stroke: none;
+            shape-rendering: cripsEdges;
+            opacity: 1;
+        }
+
+        .axis_slider_generic line {
+            stroke: #000;
+            //stroke-opacity: .6;
+            opacity: .3;
+        }
+
+        .axis_slider_generic path {
+            stroke: none;
+        }
+
+        .axis_slider_generic text {
+            font-family: sans-serif;
+            font-size: 7px;
+            stroke: none;
+            fill: #333;
+        }
+
+        .style_tooltip {
+            background-color: rgba(0,0,0, .85);
+            padding: 12px;
+            font-family: courier;
+            font-size: 11px;
+            color: #fff;
+            line-height: 15px;
+        }
+
+        .title {
+            font-family: sans-serif;
+            font-size: 20px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .pie_label_status {
+            fill: #000;
+            font-size: 19px;
+            font-weight: bold;
+            opacity: .6;
+            font-family: sans-serif;
+        }
+
+        .pie_label_sessions {
+            fill: #333;
+            opacity: .6;
+            font-family: sans-serif;
+            font-size: 12px;
+        }
+
+        .class_titlebutton {
+            //fill:#666;
+            fill: #000;
+            font-size: 16px;
+            font-weight: bold;
+            font-family: sans-serif;
+        }
+
+        .expansionline {
+            stroke: #000;
+            stroke-width: .5px;
+            opacity: 0;
+        }
+
+        .edge {
+            stroke: #f00;
+            stroke-width: 1px;
+            opacity: .1;
+        }
+
+        .node {
+            fill: #f00;
+            opacity: .1;
+        }
+
+        .edge_labelforcegraph {            
+            stroke: rgba(0,0,0, .5);
+            stroke-width: 1px;
+            opacity: .5;
+        }
+
+        .node_labelforcegraph {
+            fill: #000;
+            opacity: .5;
+        }
+
+        .slider_button_text {
+            font-family: sans-serif;
+            font-weight: bold;
+            //fill: #fff;
+            //opacity: .8;
+        }
+
+        .slider_button_text2 {
+            font-family: sans-serif;
+            font-weight: bold;
+            font-size: 10px;
+            fill: #fff;
+        }
+
+        .class_graphline1 {
+            stroke: rgba(0,0,0, .4);
+            stroke-width: .5px;
+            //d: "M5 20 l215 0";
+        }
+
+        .class_graph_verticallines {
+            stroke: #000;
+            stroke-width: 1px;
+            shape-rendering: crispEdges;
+            opacity: .3;
+        }
+
+        .class_graph_endpointcircle {
+            //fill: #f30;
+        }
+
+        .class_slidervaltext {
+            fill: #000;
+            opacity: .8;
+            //font-family: sans-serif;
+            font-family: courier;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .sliderlinktext {
+            fill: #000;
+            opacity: 1;
+            font-family: sans-serif;
+            font-size: 8px;
+        }
+
+        /*
+        .grid line {
+            stroke: rgba(0,0,0, .1);
+            stroke-width: 1px;
+        }
+        .grid path {
+            stroke-width: 0;
+        }
+        */
+
+        .description_text{
+            font-size: 14px;
+            fill: rgba(0,0,0, .4);
+            font-weight: 500;
+            //shape-rendering: crispEdges;
+        }
+
+    </style>
+    
+    <script src="./moment.min.js"></script>
+    <script src="./d3.v3.min.js"></script>
+        
+    <script src="./tools.js"></script>
+    <script src="./global.js"></script>
+    <script src="./slider.js"></script>
+    <script src="./graph1.js"></script>
+    <script src="./button.js"></script>
+    <script src="./piechart.js"></script>
+    <script src="./rangeslider.js"></script>
+    <script src="./analytics.js"></script>
+    <script src="./stats.js"></script>
+
+<center>
+<div class="well">
+    <div>
+        <span id="id_platform"></span>
+    </div>    
+    <div>
+        <span id="id_generic_slider"></span>
+    </div>
+
+    <script>
+        load_data();
+    </script>
+</div>
+</center>
+
+</body>
+</html>

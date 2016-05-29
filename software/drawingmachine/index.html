@@ -1,0 +1,69 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="../styles.css">
+		<link rel="stylesheet" type="text/css" href="../styles_page.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+	</head>
+	<body>
+		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+		<div class="container">
+			<div class="column">
+				<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+				<div class="row">
+					<a href="http://lovell.ipage.com/software" class="name">Jack Lovell</a>
+					<div class="subname">San Diego, CA</div>
+				</div>
+				<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+				<div class="row">
+					<div class="title">
+						Stochastic Drawing
+					</div>
+					<div class="subtitle">
+						C++, OpenFrameworks, OpenGL
+					</div>
+					<div class="smallbreak"></div>
+					A stochastic process attempts to render a photo. It's like photorealistic drawing.
+					<div class="smallbreak"></div>
+					"Stochastic" is derived from Greek referring to "an archer's target". In this project the target is a photograph. The stochastic process involves random changes to the arrangement of shapes in 3D space. A camera views the arrangement from a single vantage point, and determines if the image resulting from the random change is closer to the target photographic image. If yes, this arrangement is adopted as the new base from which random changes are attempted. 
+					<div class="image">
+						<iframe src="https://player.vimeo.com/video/104258367?autoplay=1&loop=1&title=0&byline=0&portrait=0" width="700" height="525" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+						<div class="caption">
+							Animation by stochastically transitioning from frame to frame.
+						</div>
+					</div>
+					<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+					<div class="break"></div>
+					<div class="heading">
+						Details and Implementation
+					</div>
+					Creating a rendering of a photograph involves many iterations where the computer tries random changes. Millions or Billions of changes are rejected and the drawing is reverted to the best-yet version. Once in a while one of the random changes results in an improvement and is accepted into the drawing. This process models evolution in nature.
+					<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+					<div class="image">
+						<iframe src="https://player.vimeo.com/video/104686570?autoplay=1&loop=1&title=0&byline=0&portrait=0" width="700" height="420" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+						<div class="caption">
+							Time-lapse footage of the drawing converging on a target image.
+						</div>
+					</div>
+					<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+					<div class="break"></div>
+					Marks in the drawing are created by deforming 2D grids of lines in 3D space with genetic programs. <a href="../gp/index.html" class="embeddedlink">More on this method of deformation can be found here</a>. Shapes are then arranged randomly to configure the drawing. There's an inherent tension between the genetic program deformations and the overall constrained goal of a realistic rendering. Genetic programs can be configured and evolved to create wildly expansive shapes and patterns, which are also then being selected for how well they conforom to the goals of the community as a whole.
+					<div class="image">
+						<a href="images/1304100119.cumulative_best.45200.fullscreen.jpg"><img src="images/gp camera_700.jpg"></a>
+						<div class="caption">
+							Rendering of a camera.
+						</div>
+					</div>
+					<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+					<div class="largebreak"></div>
+					<div class="image">
+						<a href="images/O'Toole - 1210231410.stream.9017.fullscreen.jpg"><img src="images/gp otoole_700.jpg"></a>
+						<div class="caption">
+							Peter O'Toole in <em style="font-style:initial;">Lawrence of Arabia</em>
+						</div>
+					</div>
+					<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

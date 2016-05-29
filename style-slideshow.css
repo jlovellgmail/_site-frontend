@@ -1,0 +1,99 @@
+#slideshow{
+    position: fixed; 
+    height: 100%;
+    width: 100%;
+    
+    //background-color: #fff;
+    //background-color: rgba(0,0,0, .86);
+    background-color: rgba(205,205,205, .92);
+
+    z-index: 1000;
+    display: none;
+    top: 0;
+}
+#slide {
+    height: 90%;
+    position: absolute;
+    top: 5%;
+    text-align: center;
+    width: 100%;
+}
+#slide img {
+    height: auto;
+    width: auto;
+    max-height: 100%;
+    max-width: 80%;
+
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none;   /* Chrome/Safari/Opera */
+    -khtml-user-select: none;    /* Konqueror */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* IE/Edge */
+    user-select: none;           /* non-prefixed version, currently
+                                  not supported by any browser */
+
+}
+#arrow-left {
+    position: fixed;
+    top: 50%;
+    left: 30px;
+    width: auto;
+    height: auto;
+    z-index: 1000;
+
+    -webkit-filter: invert(50%);
+    filter: invert(50%);
+    
+}
+#arrow-right {
+    position: fixed;
+    top: 50%;
+    right: 30px;
+    width: auto;
+    height: auto;
+    z-index: 1000;
+
+    -webkit-filter: invert(50%);
+    filter: invert(50%);
+    
+}
+#close {
+    position: fixed;
+    right: 30px;
+    top: 30px;
+    width: auto;
+    height: auto;
+    z-index: 1000;
+    cursor: pointer;
+
+    -webkit-filter: invert(50%);
+    filter: invert(50%);
+    
+}
+#caption {
+    position: fixed;
+    bottom: 5px;
+    width: 100%;
+    text-align: center;
+}
+.hidden {
+    display: none;
+}
+
+@media screen and (max-width: 600px) {
+    #arrow-left, #arrow-right, #close {
+        top: 5px;
+        //height: 10px;
+    }
+    #arrow-right {
+        right: auto;
+        left: 76px;
+    }
+
+}
+
+
+
+
+
+

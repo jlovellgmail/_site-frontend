@@ -1,0 +1,95 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="./styles.css">
+	</head>
+	<body>
+		<script src="../_dependencies/d3.v3.min.js"></script>
+		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+		<script> console.clear(); </script>
+		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+		<script src="./tools.js"></script>
+		<script src="./global.js"></script>
+
+
+		<script src="./button.js"></script>
+
+
+		<script src="./slider.js"></script>
+		<script src="./primitive_np.js"></script>
+		<script src="./np.js"></script>
+		<script src="./visualization_np.js"></script>
+		<script src="./render_layout_np.js"></script>
+		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+		<div class="container">
+
+
+
+			<!-- row -->
+			<div class="column imagecol">
+
+				<img src="images/np network only.jpg">
+				
+				<!-- video -->
+				<iframe src="https://player.vimeo.com/video/153575000?autoplay=1&loop=1" width="700" height="518" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
+
+			</div>
+
+			<div class="column textcol">
+
+				<div class="title">
+					"Network Programs" Visualization
+				</div>
+
+				<div class="subtitle">
+					JavaScript, D3.js, HTML, CSS
+				</div>
+
+				<div class="text">
+					<div class="section">
+					This is an experiment where I'm modifying genetic programs to have a network or graph structure that allows recursion. I call them "Network Programs".
+					</div>
+
+					<div class="section">
+					<div class="heading">
+						Details and Implementation
+					</div>
+					Our forefathers created genetic programs with a unidirectional tree structure where the computation enters at the root and flows out to the tip of each branch in turn, until the entire tree is traversed and the computation is complete.
+					</div>
+
+					<div class="section">
+					In Network Programs nodes can have any other node as a child, so they can loop back around and reenter the computation at any point.
+					</div>
+
+					<div class="section">
+					Infinite loops become possible in this structure and are stopped by a computation maximum depth limit. Once the computation has descended through the maximum allowed number of children, the final node, if it is not a terminal itself, will be evaluated using an attached "leaf" node which is always a terminal with no children. Each node in the network has its own personal leaf node for cases where it becomes the final node in a max depth evaluation. 
+					</div>
+
+					<div class="section">
+					Black nodes display their function, e.g. "pow" where the first child is raised to the power of the second child, or "neg" which negates the value of its only child. The single green node is the root, where the computation initially enters the network. Leaf nodes are shown as smaller red circles attached to each node.
+					</div>
+
+					<div class="section">
+					Sliders are connected to some of the constraints in D3's force directed graph layout to test different values.
+					</div>
+
+					<div class="section">
+					I display the output of the Network Program in a graph. The Network Program is like a genotype, and the graph is the resulting animal or phenotype. A lot of the time nothing is visibiel in the graph because, for instance, all the output went to zero or infinity. But often the result is an interesting and unusual curve that appears to have a particular aesthetic style, like a personality.
+					</div>
+
+				</div>
+			</div>
+
+
+
+			<!-- row -->
+			<div id="id_div1" class=""></div>
+
+
+
+		</div>
+		
+		<script> render_layout_np(); </script>
+	</body>
+</html>

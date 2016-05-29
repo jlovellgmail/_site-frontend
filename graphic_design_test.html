@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8 />
+	<meta name="description" content="description">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+	<title>Jack Lovell</title>
+	<link rel="stylesheet" type="text/css" media="screen" href="style.css"/>
+	<link rel="stylesheet" type="text/css" media="screen" href="style-slideshow.css"/>
+	<script src="jquery-1.7.1.min.js"></script>
+	<!--[if IE]>
+	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+</head>
+<body>   
+	<div id="container">
+		<div class="nav" style="visibility:hidden;">
+			<ul>
+				<li class="name">Jack Lovell</li>
+				<li class="contact"><a href="contact.html">Contact</a></li>
+
+				<li class="topitem"><a href="graphic_design.html" class="current">Graphic Design</a></li>
+				<li><a href="drawings.html">Drawings</a></li>
+				<li><a href="software.html">Software</a></li>
+
+			</ul>
+		</div>
+		<ul id="myContent" style="visibility:hidden;">
+
+
+
+
+
+			<li id="id-li">
+				<div class="contentcontainer" id="id-contentcontainer"
+					data-image="160515 chooser_1500.jpg"
+					>
+					<img src="http://lovell.ipage.com/design/images/160515 chooser_342.jpg" alt=""/>
+					<div class="caption">
+						Modal dialog with scrollable list and expandable line items.
+					</div>
+				</div>
+			</li>
+			<li id="id-li">
+				<div class="contentcontainer" id="id-contentcontainer"
+					data-image="developer stats - transparent dropshadow.png"
+					>
+					<img src="http://lovell.ipage.com/design/images/developer stats_342.jpg" alt=""/>
+					<div class="caption">
+						Interactive charts for Illumina BaseSpace app store developer analytics.
+						<a class="captionlink" href="http://lovell.ipage.com/design/software/charts/index.html"> more info</a>
+					</div>
+				</div>
+			</li>
+			<li id="id-li">
+				<div class="contentcontainer" id="id-contentcontainer"
+					data-image="aramark combo.png"
+					>
+					<img src="http://lovell.ipage.com/design/images/aramark%20purple_340.jpg" alt=""/>
+					<div class="caption">
+						Signage for an Aramark event.
+					</div>
+				</div>
+			</li>
+			<li id="id-li">
+				<div class="contentcontainer" id="id-contentcontainer"
+					data-image="Racing%20Dreams%20-%20key%20art_1000.jpg"
+					>
+					<img src="http://lovell.ipage.com/design/images/rd%20340w.jpg" alt=""/>
+					<div class="caption">
+						Poster for the documentary film <em>Racing Dreams</em>.
+					</div>
+				</div>
+			</li>
+			<li id="id-li">
+				<div class="contentcontainer" id="id-contentcontainer"
+					data-image="yaddo_1200.jpg"
+					>
+					<img src="http://lovell.ipage.com/design/images/yaddo_340.jpg" alt=""/>
+					<div class="caption">
+						Poster for an Exhibition.
+					</div>
+				</div>
+			</li>
+			<li id="id-li">
+				<div class="contentcontainer" id="id-contentcontainer"
+					data-image="vegucated_poster_1000.jpg"
+					>
+					<img src="http://lovell.ipage.com/design/images/vegucated%20340w.jpg" alt=""/>
+					<div class="caption">
+						Poster for the documentary film <em>Vegucated</em>.
+					</div>
+				</div>
+			</li>
+			<li id="id-li">
+				<div class="contentcontainer" id="id-contentcontainer"
+					data-image="rd promo book 160509.jpg"
+					>
+					<img src="http://lovell.ipage.com/design/images/rd promo book 160509_342.jpg" alt=""/>
+					<div class="caption">
+						Promotional book for the award-winning documentary film <em>Racing Dreams</em>.
+					</div>
+				</div>
+			</li>
+			<li id="id-li">
+				<div class="contentcontainer" id="id-contentcontainer"
+					data-image="hersheys_1200.jpg"
+					>
+					<img src="http://lovell.ipage.com/design/images/hersheys_340.jpg" alt=""/>
+					<div class="caption">
+						20-foot wrap-around graphic walls creating an immersive environment for a Hershey's event, installed at Hilton New York.
+					</div>
+				</div>
+			</li>
+			<li id="id-li">
+				<div class="contentcontainer" id="id-contentcontainer"
+					data-image="blogher 2012 - OutB.jpg"
+					>
+					<img src="http://lovell.ipage.com/design/images/blogher%202012%20-%20OutB_400.jpg" alt=""/>
+					<div class="caption">
+						20-foot wrap-around graphic walls creating an immersive environment for a Hershey's event, installed at San Diego Convention Center.
+					</div>
+				</div>
+			</li>
+			<li id="id-li">
+				<div class="contentcontainer" id="id-contentcontainer"
+					data-image="gracieland 160509.jpg"
+					>
+					<img src="http://lovell.ipage.com/design/images/gracieland 160509_342.jpg" alt=""/>
+					<div class="caption">
+						Flyer for an event.
+					</div>
+				</div>
+			</li>
+			<li id="id-li">
+				<div class="contentcontainer" id="id-contentcontainer"
+					data-image="zoo.jpg"
+					>
+					<img src="http://lovell.ipage.com/design/images/zoo_340.jpg" alt=""/>
+					<div class="caption">
+						Animated logo for film intro credits.
+					</div>
+				</div>
+			</li>
+			
+
+
+
+
+		</ul>
+	</div>
+	<!-- --------------------------------------------------- -->
+	<script>
+		// loading icon
+		$("body").addClass("loading");
+		/*
+		$(window).on("load", function() {
+		    $("#myContent").css("visibility", "visible");
+		    $("body").removeClass("loading");
+		});
+		*/
+		// moved to end of wookmark
+	</script>
+	<!-- --------------------------------------------------- -->
+	<script>
+		// stop the menu from jumping around when it loads
+		var item_width = 362;
+		var offset = 10;
+		var columnWidth = item_width + offset;
+		var containerWidth = $(window).width();
+		var columns = Math.floor( (containerWidth + offset) / columnWidth );
+	  	columns = Math.min(columns, 4);
+		var nav = $(".nav");
+		nav.width((columns * columnWidth) + "px");
+		nav.css("visibility", "visible");
+	</script>
+	<!-- --------------------------------------------------- -->
+	<script type="text/javascript" src="jquery.wookmark.js"></script>
+	<script type="text/javascript">
+
+		/*
+		$(window).on("load", function() {
+			var height = document.getElementById("id-contentcontainer").clientHeight;			
+			$('#myContent li').wookmark({itemWidth: 362});
+		});
+		*/
+		$(document).ready(function(){
+			aspectratios();
+		});
+
+
+		window.onresize = function(event) {
+			$('#myContent li').wookmark({itemWidth: 362});
+
+			// add this because I removed the nav width sizing from the wookmark file
+			// same as above
+			var item_width = 362;
+			var offset = 10;
+			var columnWidth = item_width + offset;
+			var containerWidth = $(window).width();
+			var columns = Math.floor( (containerWidth + offset) / columnWidth );
+			columns = Math.min(columns, 4);
+			var nav = $(".nav");
+			nav.width((columns * columnWidth) + "px");
+
+		}
+	</script>
+	<!-- --------------------------------------------------- -->
+	<script>
+		$(window).on("load", function() {
+			$(".captionlink").click(function(e){
+				e.stopPropagation();
+			});
+			//$(".captionlink").attr("target", "_blank");
+		});
+	</script>
+	<!-- --------------------------------------------------- -->
+	<script src="util.js"></script>
+	<script>
+		// cache slideshow images
+		var list = [
+			"160515 chooser_1500.jpg"
+			,"aramark combo.png"
+			,"hersheys_1200.jpg"
+			,"blogher 2012 - OutB.jpg"
+			,"rd promo book 160509.jpg"
+			,"zoo.jpg"
+			,"Racing%20Dreams%20-%20key%20art_1000.jpg"
+			,"vegucated_poster_1000.jpg"
+			,"gracieland 160509.jpg"
+			,"yaddo_1200.jpg"
+		];
+		$(window).on("load", function() {
+			loadimages(list);
+		});
+	</script>
+	<!-- --------------------------------------------------- -->
+	<script type="text/javascript" src="page-JL.js"></script>
+	<div id="slideshow">
+		<a href="#" id="previous"><img src="http://lovell.ipage.com/design/images/left_arrow_white_transparent.png" width="40px" height="40px" id="arrow-left"></a>
+		<a href="#" id="next"><img src="http://lovell.ipage.com/design/images/right_arrow_white_transparent.png" width="40px" height="40px" id="arrow-right"></a>
+		<img id="close" src="http://lovell.ipage.com/design/images/close_arrow_white_transparent.png" width="40px" height="40px">
+		<div id="slide"></div>
+		<div id="caption"></div>
+	</div>
+	<!-- --------------------------------------------------- -->
+
+
+	<div class="modal"><!-- Place at bottom of page --></div>
+
+
+</body>
+</html>

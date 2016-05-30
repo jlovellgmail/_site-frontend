@@ -1,0 +1,1768 @@
+<!doctype html>
+<html>
+<head>
+
+
+    <link href="/public/cdn/basespace/css/master.min.css" rel="stylesheet" />
+
+    <!--
+    a complete copy of msr_charts.css:
+    -->
+    <style>
+        .charts-row {
+            margin: 0px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .svg-bg {
+            fill: rgba(0,0,0, .02);
+        }
+        //--------------------------------------------------
+        .msr-barchart {
+            font-family: 'Helvetica','Arial',sans-serif;
+        }
+        .msr-barchart .title {
+        }
+        .msr-barchart .axis {
+            fill: none;
+            stroke: #666;
+        }
+        .msr-barchart .axis-label {
+            font-size: 10px;
+            font-family: sans-serif;
+            stroke: none;
+        }
+        .msr-barchart .axis-label-y {
+            text-anchor: end;
+            fill: #666;
+        }
+        .msr-barchart .axis-label-x {
+            text-anchor: end;
+            fill: rgba(0,0,0, .8);
+        }
+        .msr-barchart .bar-top-label {
+            font-size: 11px;
+            fill: #666;
+            text-shadow: 0px 0px 2px rgba(255,255,255, 1);
+        }
+        .msr-barchart .grid {
+            fill: none;
+            stroke: rgba(0,0,0, .1);
+        }
+        .msr-barchart .bar-green {
+            fill: rgba(97,209,50, .85);
+        }
+        .msr-barchart .bar-red {
+            fill: rgba(255,24,26, .85);
+        }
+        //--------------------------------------------------
+        .msr-piechart {
+        }
+        .msr-piechart .arc path {
+            stroke: rgba(255,255,255, 1);
+        }
+        body{
+            margin: 8px;
+            background-color: white;
+        }
+    </style>
+        
+
+    <!--
+    it wasn't finding d3 on alderaan with these
+    go back to using the msr minified js file
+    -->    
+    <!--
+    <script type="text/javascript" src="/public/cdn/analysisreportassets/jquery-2.1.0.min.js"></script>
+    <script type="text/javascript" src="/public/cdn/analysisreportassets/d3.v3.min.js"></script>
+    -->
+
+
+    <!-- JL 5/29 -->
+    <script src="./d3.min.js" charset="utf-8"></script>
+    <script src="jquery-1.7.1.min.js"></script>
+
+
+    <script type="text/javascript" src="/public/cdn/analysisreportassets/msr-reports/msrreportscripts.min.js"></script>
+
+
+    <script>
+        console.clear();
+    </script>
+
+    <!--
+    started as a complete copy of pieChartController.js:
+    -->    
+    <script>
+        //--------------------------------------------------
+        // global
+        var piechart;
+        var static_data;
+
+        var d_radius_inner = -20;
+        var d_radius_outer = -80;
+        var scale_start = 1.5;
+        var scale_end = 1.0;
+        var rotation_start = 0;
+        var rotation_end = 0;
+        var opacity_start = 0.7;
+        var opacity_end = 1;
+        var delay_radius = 0;
+        var duration_radius = 600;
+        var delay_transform = 50;
+        var duration_transform = 500;
+        var crush_arcs = 1;
+
+        var sliders = {};
+
+        var array_global;
+
+        //--------------------------------------------------
+        var svg_bgcolor = "rgba(0,0,0, .02)";
+        var charts_container_height = 475;
+        //--------------------------------------------------
+        //--------------------------------------------------
+        //--------------------------------------------------
+        // small RNA
+
+        function render_smallRNA_layout(container_id){
+            
+            // make global:
+            //var static_data = 
+            static_data = 
+
+                [
+                    {
+                        "Key":"precursor"
+                        ,"Value":68.3
+                        ,"":""
+                    }
+                    ,{"Key":"indexedAdapter1","Value":48,"":""},{"Key":"Mature miRNA","Value":47,"":""},{"Key":"humRibosomal","Value":33,"":""},{"Key":"Unaligned","Value":26,"":""},{"Key":"hum5SrDNA","Value":20,"":""},{"Key":"snoRNA","Value":19.3,"":""},{"Key":"Gt_RNA","Value":15.5,"":""},{"Key":"piRNA","Value":14.5,"":""},{"Key":"lincRNA","Value":11.2,"":""},{"Key":"exon","Value":6.2,"":""},{"Key":"phi","Value":5,"":""},{"Key":"cM","Value":4,"":""},{"Key":"Genome","Value":0,"":""},{"Key":"snRNA","Value":0,"":""}]
+                ;
+            var args = {
+                data:               static_data
+                ,accessor:          function(d){ return d.Value; }
+                ,accessor_labels:   function(d){ return d.Key; }
+            };
+            piechart = create_piechart(args);
+            document
+                .getElementById(container_id)
+                .appendChild(piechart.node())
+                ;
+            piechart.display(static_data);
+            array_global = static_data;
+        }
+        //--------------------------------------------------
+        //--------------------------------------------------
+        //--------------------------------------------------
+        // generic
+
+        function getFileAsync(url){
+            var def = $.Deferred();
+            $.ajax({
+                type: 'GET',
+                url: url,
+                dataType: "text/plain",
+                xhrFields: {
+                    withCredentials: true
+                }
+            }).always(function(response){
+                def.resolve(response.responseText);
+            });
+            return def;
+        }
+        //--------------------------------------------------
+        function create_piechart(args){
+            var bgcolor = "rgba(0,0,0, .02)";
+            var default_margin = 30;
+            var svg_rect = {        
+                width: 600
+                ,height: charts_container_height
+                ,margin: {
+                    top: default_margin
+                    ,left: default_margin
+                    ,bottom: default_margin
+                    ,right: default_margin
+                }
+                ,header_height: 40
+            };
+            var piechart_margin_left = 40;
+            var piechart_margin_top = 40;
+            var radius_inner = 60;
+            var radius_outer = 120;
+            var colors_12 = [
+                'rgba(31, 120, 180, .6)'
+                ,'rgb(31,120,180)'
+                ,'rgba(51, 160, 44, .6)'
+                ,'rgb(51,160,44)'
+                ,'rgb(251,154,153)'
+                ,'rgb(227,26,28)'
+                ,'rgb(253,191,111)'
+                ,'rgb(255,127,0)'
+                ,'rgb(202,178,214)'
+                ,'rgb(106,61,154)'
+                ,'rgb(215, 205, 123)'
+                ,'rgb(177,89,40)'
+                // additional colors:
+                ,'rgba(0, 180, 180, .8)'
+            ];
+            var arc_colors = 
+                d3.scale.ordinal()
+                .range(colors_12)
+                ;        
+            var arc = 
+                d3.svg.arc()
+                .innerRadius(radius_inner)
+                .outerRadius(radius_outer)
+                ;
+            // install our own properties for managing data
+            var data_total = 0;
+            args.data.forEach(function(d){ 
+                data_total += args.accessor(d); 
+            });
+            args.data.forEach(function(d){
+                d._value = args.accessor(d);
+                d._portion = d._value / data_total;
+                d._percentage = d._portion * 100;
+            });
+            var pie = 
+                d3.layout.pie()
+                .sort(null)
+                .value(function(d) { return d._portion; })
+                ;
+            var svg_container = 
+                d3.select(document.createElement("div"))
+                .attr("id", "piechart_container")
+                .style("display", "inline-block")
+                .style("width", svg_rect.width)
+                .style("height", svg_rect.height)
+                ;
+            var svg = 
+                svg_container.append("svg")
+                .attr("width", svg_rect.width)
+                .attr("height", svg_rect.height)
+                ;
+            var svg_background = 
+                svg.append("rect")
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .attr("fill", svg_bgcolor)
+                ;
+            var g_graphics = 
+                svg.append("g")
+                .attr("class", "msr-piechart")        
+                .attr("transform", "translate(" + 
+                    (radius_outer + piechart_margin_left) + "," + 
+                    (radius_outer + svg_rect.header_height + piechart_margin_top) + ")")
+                ;
+            var g_piechart = 
+                g_graphics.append("g")
+                ;
+            var title = create_title();
+            // get auto display function
+            svg_container.display = get_display_auto_function(
+                    display_style2_piechart_initial
+                    ,display_style1_labels
+                    ,display_style1_piechart_subsequent
+                    ,display_style1_labels
+                );
+            //--------------------------------------------------
+            // direct access for testing in console
+            svg_container.display_style1 = function(){
+                display_style1_initial(args.data);
+            }
+            svg_container.display_style2 = function(){
+                display_style2_piechart_initial(args.data);
+            }
+            svg_container.display_style3 = function(){
+                display_style3_piechart_initial(args.data);
+            }
+            svg_container.displaytest = display_style2_piechart_initial;
+
+
+
+
+            // intro test
+            svg_container.display_dynamic = function(){
+                display_dynamic_piechart_initial();
+
+                //display_style1_labels(array, radius_outer);
+                display_style1_labels(static_data, radius_outer);
+
+            }
+            function display_dynamic_piechart_initial(){
+                // remove any existing arcs and do initial display
+                var current_arcs = 
+                    g_piechart
+                    .selectAll("#arc_current")
+                    .remove()
+                    ;
+                // create the arcs
+                paths = 
+                    g_piechart
+                    .selectAll("#arc_current")
+                    
+                    //.data(pie(array))
+                    .data(pie(static_data))
+                    
+                    .enter()
+                    .append("g")
+                    .attr("id", "arc_current")
+                    .attr("class", "arc")
+                    .append("path")
+                    .style("fill", function(d,i){ return arc_colors(i); })
+                    //.attr("d", function(d){ return arc(d); })
+                    ;
+
+                // these were moved up top to global
+                /*
+                var d_radius_inner = -20;
+                var d_radius_outer = -80;
+                var scale_start = 1.5;
+                var scale_end = 1.0;
+                var rotation_start = 0;
+                var rotation_end = 0;
+                var opacity_start = 0.7;
+                var opacity_end = 1;
+                */
+
+
+                paths
+                    .transition()
+
+                    /*
+                    .delay(0)
+                    .duration(600)
+                    */
+                    .delay(delay_radius)
+                    .duration(duration_radius)
+
+                    .ease("cubic-out")
+                    .attrTween("d", function(a){
+                        var interpolate_radius_inner = d3.interpolate(radius_inner + d_radius_inner, radius_inner);
+                        var interpolate_radius_outer = d3.interpolate(radius_outer + d_radius_outer, radius_outer);
+                        return function(t) {
+                            return arc
+                                .innerRadius( interpolate_radius_inner(t) )
+                                .outerRadius( interpolate_radius_outer(t) )
+                                ( a )
+                                ;
+                        };
+                    })
+                    ;
+                g_piechart
+                    .attr("transform", "scale("+scale_start+")"  +" rotate("+rotation_start+")")
+                    .style("opacity", opacity_start)
+                    .transition()
+
+                    /*
+                    .delay(50)
+                    .duration(500)
+                    */
+                    .delay(delay_transform)
+                    .duration(duration_transform)
+
+                    .ease("cubic-out")
+                    .attr("transform", "scale("+scale_end+")"  +" rotate("+rotation_end+")")
+                    .style("opacity", opacity_end)
+                    ;
+            }
+
+
+
+
+
+
+            // intro test
+            svg_container.display_dynamic_2 = function(){
+                display_dynamic_piechart_initial_2();
+                display_style1_labels(static_data, radius_outer);
+            }
+            function display_dynamic_piechart_initial_2(){
+                // remove any existing arcs and do initial display
+                var current_arcs = 
+                    g_piechart
+                    .selectAll("#arc_current")
+                    .remove()
+                    ;
+
+
+
+                /*
+                // copy of data with all zeros 
+                // to make the arcs initially collapsed along the circumference
+                // plus add an extra invisible arc that will take up the entire circumference
+                var zeros = static_data.map(function(d){
+                    return {
+                        _value: 0
+                        ,_portion: 0
+                    };
+                });
+                zeros.push({ 
+                    _value: 1
+                    ,_portion: 1
+                });
+                */
+                var zeros = static_data.map(function(d){
+                    return {
+
+                        // pie uses portion so value is not necessary here
+                        //_value: d._value * crush_arcs,
+                        _portion: d._portion * crush_arcs
+                    };
+                });
+                zeros.push({ 
+                    //_value: 1-crush_arcs,
+                    _portion: 1-crush_arcs
+                });
+
+
+
+
+                // create the arcs
+                paths = 
+                    g_piechart
+                    .selectAll("#arc_current")
+                    .data(pie(zeros))                    
+                    .enter()
+                    .append("g")
+                    .attr("id", "arc_current")
+                    .attr("class", "arc")
+                    .append("path")
+                    .style("fill", function(d,i){ return arc_colors(i); })
+
+                    .each(function(d){ this._current = d; }) // store the initial angles            
+
+                    ;
+                paths
+
+                    .data(pie(static_data))
+
+                    .transition()
+                    .delay(delay_radius)
+                    .duration(duration_radius)
+                    .ease("cubic-out")
+                    .attrTween("d", function(a){
+
+                        var interpolate = d3.interpolate(this._current, a);
+
+                        var interpolate_radius_inner = d3.interpolate(radius_inner + d_radius_inner, radius_inner);
+                        var interpolate_radius_outer = d3.interpolate(radius_outer + d_radius_outer, radius_outer);
+
+                        this._current = interpolate(0);
+
+                        return function(t) {
+                            return arc
+                                .innerRadius( interpolate_radius_inner(t) )
+                                .outerRadius( interpolate_radius_outer(t) )
+                                ( interpolate(t) )
+                                ;
+                        };
+                    })
+                    ;
+                g_piechart
+                    .attr("transform", "scale("+scale_start+")"  +" rotate("+rotation_start+")")
+                    .style("opacity", opacity_start)
+                    .transition()
+                    .delay(delay_transform)
+                    .duration(duration_transform)
+                    .ease("cubic-out")
+                    .attr("transform", "scale("+scale_end+")"  +" rotate("+rotation_end+")")
+                    .style("opacity", opacity_end)
+                    ;
+            }
+
+
+
+
+
+            //--------------------------------------------------
+            return svg_container;
+            //--------------------------------------------------
+            //--------------------------------------------------
+            //--------------------------------------------------
+            function create_title(){
+                var title = {};
+                var translation = {
+                    x: 24,
+                    y: 38
+                };
+                title.g = 
+                    svg.append("g")
+                    .attr("transform", "translate(" + translation.x + "," + translation.y + ")")
+                    ;
+                title.text = 
+                    title.g.append("text")
+                    .attr("id", "piechart_title_text_element")
+                    .style("text-anchor", "start")
+                    .style("font-size", "20px")
+                    //.text("piechart intro test")
+                    ;
+                return title;
+            }
+            function update_title(){
+                var x = d3.select("#piechart_title_text_element")
+                .text("piechart intro test")
+                ;
+            }
+            function format_label_percentage(raw_number){
+                var decimal_places = 2;
+                return d3.round(raw_number, decimal_places) + "%";
+            }
+            //--------------------------------------------------
+            // display auto depending on whether arcs exist, 
+            // accepting initial / subsequent args
+            // return a display function
+            function get_display_auto_function(
+                    display_piechart_initial
+                    ,display_labels_initial
+                    ,display_piechart_subsequent
+                    ,display_labels_subsequent 
+                ){
+                return display_auto;
+                function display_auto(array){
+                    // decide whether to call the initial or subsequent
+                    // display functions based on whether or not arcs already exist
+                    var current_arcs = 
+                        g_piechart
+                        .selectAll("#arc_current")
+                        ;
+                    // d3 selection.size() does not exist in the version of d3 we're loading
+                    // https://github.com/mbostock/d3/issues/1177
+                    //if(current_arcs.size() == 0){
+                    // to do: 
+                    // update d3 version
+                    function get_size(){
+                        var n = 0;
+                        current_arcs.each(function() { ++n; });
+                        return n;
+                    }
+                    if(get_size() == 0){
+                        display_piechart_initial(array);
+                        display_labels_initial(array, radius_outer);
+                    }
+                    else{
+                        display_piechart_subsequent(array, current_arcs);
+                        display_labels_subsequent(array, radius_outer);
+                    }
+                }
+            }
+            //--------------------------------------------------
+            // simple
+
+            function display_simple(array){
+                display_piechart_simple(array);
+                display_labels_simple(array, radius_outer);
+                function display_piechart_simple(array){
+                    paths = 
+                        g_piechart
+                        .selectAll("#arc_current")
+                        .data(pie(array))
+                        .enter()
+                        .append("g")
+                        .attr("id", "arc_current")
+                        .attr("class", "arc")
+                        .append("path")
+                        .style("fill", function(d,i){ return arc_colors(i); })
+                        .attr("d", function(d){ return arc(d); })
+                        ;
+                }
+                function display_labels_simple(data, radius){
+                    var label_items_vertical_separation = 24;
+                    var label_group_margin_left = 80;
+                    var label_group = {
+                        // translation relative to center of piechart:
+                        dx: radius + label_group_margin_left
+                        ,dy: -(radius - 16)
+                    }
+                    var g_labels =                 
+                        g_graphics
+                        .append("g")
+                        .attr("transform", "translate(" + label_group.dx + "," + label_group.dy + ")")
+                        .attr("class", "piechart-labels")
+                        ;
+                    var labels =
+                        g_labels.selectAll("g")
+                        .data(data).enter()
+                        .append("g")
+                        .attr("id", "label_item")
+                        .attr("transform", function(d,i){ return "translate(0,"+ i*label_items_vertical_separation +")"; })
+                        ;
+                    var color_block_size = 17;
+                    var separation1 = 6;
+                    var separation2 = 7;
+                    var text_colors_flag = true;
+                    var text_color_default = "rgba(0,0,0, .9)";
+                    labels
+                        .append("g")
+                        .append("text")
+                        .style("text-anchor", "end")
+                        .attr("dx", (-separation1)+"px")
+                        .style("fill", function(d,i){
+                            return text_colors_flag ? arc_colors(i) : text_color_default;
+                        })
+                        .attr("class", "piechart-label-value")
+                        .text(function(d){
+                            return format_label_percentage(d._percentage);
+                        })
+                        ;
+                    labels
+                        .append("g")
+                        .append("rect")
+                        .attr("width", color_block_size+"px")
+                        .attr("height", color_block_size+"px")
+                        .attr("transform", "translate(0,"+(-color_block_size+4)+")")
+                        .attr("fill", function(d,i){
+                            return arc_colors(i);
+                        })
+                        ;
+                    labels
+                        .append("g")
+                        .append("text")
+                        .style("text-anchor", "start")
+                        .attr("dx", (color_block_size + separation2)+"px")
+                        .style("font-weight", "bold")
+                        .style("fill", function(d,i){
+                            return text_colors_flag ? arc_colors(i) : text_color_default;
+                        })
+                        .attr("class", "piechart-label-name")
+                        .text(function(d){
+                            return args.accessor_labels(d);
+                        })
+                        ;
+                    return labels;
+                }
+            }
+            //--------------------------------------------------
+            // style 1
+
+            function display_style1(array){
+                // decide whether to call the initial or subsequent
+                // display functions based on whether or not arcs already exist
+                var current_arcs = 
+                    g_piechart
+                    .selectAll("#arc_current")
+                    ;
+                // d3 selection.size() does not exist in the version of d3 we're loading
+                // https://github.com/mbostock/d3/issues/1177
+                //if(current_arcs.size() == 0){
+                // to do: 
+                // update d3 version
+                function get_size(){
+                    var n = 0;
+                    current_arcs.each(function() { ++n; });
+                    return n;
+                }
+                if(get_size() == 0){
+                    display_style1_piechart_initial(array);
+                    display_style1_labels(array, radius_outer);
+                }
+                else{
+                    display_style1_piechart_subsequent(array, current_arcs);
+                    display_style1_labels(array, radius_outer);
+                }
+            }
+            function display_style1_initial(array){
+                // remove any existing arcs and do initial display
+                var current_arcs = 
+                    g_piechart
+                    .selectAll("#arc_current")
+                    .remove()
+                    ;
+                display_style1_piechart_initial(array);
+                display_style1_labels(array, radius_outer);
+            }
+            function display_style1_piechart_initial(array){
+                // copy of data with all zeros 
+                // to make the arcs initially collapsed along the circumference
+                // plus add an extra invisible arc that will take up the entire circumference
+                var zeros = array.map(function(d){
+                    return {
+                        _value: 0
+                        ,_portion: 0
+                    };
+                });
+                zeros.push({ 
+                    _value: 1
+                    ,_portion: 1
+                });
+                // create the arcs
+                paths = 
+                    g_piechart
+                    .selectAll("#arc_current")
+                    .data(pie(zeros))           
+                    .enter()
+                    .append("g")
+                    .attr("id", "arc_current")
+                    .attr("class", "arc")
+                    .append("path")
+                    .style("fill", function(d,i){ return arc_colors(i); })
+                    .each(function(d){ this._current = d; }) // store the initial angles            
+                    ;
+                var d_radius_inner = 24;
+                var d_radius_outer = -24;
+                var scale_start = 0.9;
+                var scale_end = 1.0;
+                var rotation_start = -4;
+                var rotation_end = 0;
+                paths
+                    .data(pie(array))            
+                    .transition()
+                    .duration(700)
+                    .ease("cubic-out")
+                    .attrTween("d", function(a){
+                        var interpolate = d3.interpolate(this._current, a);
+                        var interpolate_radius_inner = d3.interpolate(radius_inner + d_radius_inner, radius_inner);
+                        var interpolate_radius_outer = d3.interpolate(radius_outer + d_radius_outer, radius_outer);
+                        this._current = interpolate(0);
+                        return function(t) {
+                            //return arc( interpolate(t) );
+                            return arc
+                                .innerRadius( interpolate_radius_inner(t) )
+                                .outerRadius( interpolate_radius_outer(t) )
+                                ( interpolate(t) )
+                                ;
+                        };
+                    })
+                    ;
+                g_piechart
+                    .attr("transform", "scale("+scale_start+")"  +" rotate("+rotation_start+")")
+                    .transition()
+                    .duration(1000)
+                    .ease("cubic-out")
+                    .attr("transform", "scale("+scale_end+")"  +" rotate("+rotation_end+")")
+                    ;
+            }
+            function display_style1_piechart_subsequent(array, current_arcs){
+                // remove old arcs
+                current_arcs
+                    .attr("id", "arc_outgoing")
+                    .select("path")
+                    .transition()
+                    .delay(0)
+                    .duration(200)
+                    .style("opacity", 0)
+                    ;
+                // remove the g containing each path
+                // the delay is long enough to contain the previous duration
+                // to do: chain these instead of matching times
+                g_piechart
+                    .selectAll("#arc_outgoing")
+                    .transition()
+                    .delay(600)
+                    .remove()
+                    ;
+                animate();
+                function animate(){
+                    // create the arcs
+                    paths = 
+                        g_piechart
+                        .selectAll("#arc_current")
+                        .data(pie(array))           
+                        .enter()
+                        .append("g")
+                        .attr("id", "arc_current")
+                        .attr("class", "arc")
+                        ;
+                    paths
+                        .append("path")
+                        .style("fill", function(d,i){ return arc_colors(i); })
+                        .attr("d", function(d){ return arc(d); })
+                        .style("opacity", 0)
+                        .transition()
+                        .delay(0)
+                        .duration(300)
+                        .style("opacity", 1)
+                        ;
+                }
+            }
+            function display_style1_labels(data, radius){
+                // remove any existing labels
+                d3.selectAll(".piechart-labels")
+                    .transition()
+                    .delay(0)
+                    .duration(100)
+                    .style("opacity", 0)
+                    .remove()
+                    ;
+                var label_items_vertical_separation = 24;
+                var label_group_margin_left = 80;
+                var label_group = {
+                     // translation relative to center of piechart:
+                     dx: radius + label_group_margin_left
+                    ,dy: -(radius - 16)
+                }
+                var g_labels = 
+                    g_graphics
+                    .append("g")
+                    //.attr("transform", "translate(" + label_group.dx + "," + label_group.dy + ")")
+                    .attr("transform", "translate(" + (label_group.dx+40) + "," + label_group.dy + ")")
+                    .attr("class", "piechart-labels")
+                    ;
+                // fade in labels
+                g_labels
+                    .style("opacity", 0)
+                    .transition()
+                    .delay(50)
+                    .duration(300)
+                    .style("opacity", 1)
+                    ;
+                var labels =
+                    g_labels.selectAll("g")
+                    .data(data).enter()
+                    .append("g")
+                    .attr("id", "label_item")
+                    .attr("transform", function(d,i){ return "translate(0,"+ i*label_items_vertical_separation +")"; })
+                    ;
+                var color_block_size = 13;
+                var separation1 = 6;
+                var separation2 = 7;
+                var text_colors_flag = true;
+                var text_color_default = "rgba(0,0,0, .9)";
+                labels
+                    .append("g")
+                    .append("text")
+                    .style("text-anchor", "end")
+                    .attr("dx", (-separation1)+"px")
+                    .style("fill", function(d,i){
+                        return text_colors_flag ? arc_colors(i) : text_color_default;
+                    })
+                    .style("font-family", "consolas")
+                    .attr("class", "piechart-label-value")
+                    .text(function(d){
+                        return format_label_percentage(d._percentage);
+                    })
+                    ;
+                labels
+                    .append("g")
+                    .append("rect")
+                    .attr("width", color_block_size+"px")
+                    .attr("height", color_block_size+"px")
+                    .attr("transform", "translate(0,"+(-color_block_size+2)+")")
+                    .attr("fill", function(d,i){
+                        return arc_colors(i);
+                    })
+                    ;
+                labels
+                    .append("g")
+                    .append("text")
+                    .style("text-anchor", "start")
+                    .attr("dx", (color_block_size + separation2)+"px")
+
+
+                    // 5/29
+                    .style("font-weight", "bold")
+                    //.style("font-family", "sans-serif")
+                    .style("font-family", "consolas")
+                    .style("font-size", "15px")
+
+
+
+                    .style("fill", function(d,i){
+                        return text_colors_flag ? arc_colors(i) : text_color_default;
+                    })
+                    .attr("class", "piechart-label-name")
+                    .text(function(d){
+                        return args.accessor_labels(d);
+                    })
+                    ;
+                return labels;
+            }
+            //--------------------------------------------------
+            // style 2
+
+            function display_style2_piechart_initial(array){
+                // create the arcs
+                paths = 
+                    g_piechart
+                    .selectAll("#arc_current")
+                    .data(pie(array))           
+                    .enter()
+                    .append("g")
+                    .attr("id", "arc_current")
+                    .attr("class", "arc")
+                    .append("path")
+                    .style("fill", function(d,i){ return arc_colors(i); })
+                    .attr("d", function(d){ return arc(d); })
+                    ;
+                var d_radius_inner = -20;
+                var d_radius_outer = -10;
+                var scale_start = 0.85;
+                var scale_end = 1.0;
+                var rotation_start = -1;
+                var rotation_end = 0;
+                var opacity_start = 0.0;
+                var opacity_end = 1;
+                paths
+                    .transition()
+                    //.delay(100)
+                    .duration(600)
+                    .ease("cubic-out")
+                    .attrTween("d", function(a){
+                        var interpolate_radius_inner = d3.interpolate(radius_inner + d_radius_inner, radius_inner);
+                        var interpolate_radius_outer = d3.interpolate(radius_outer + d_radius_outer, radius_outer);
+                        return function(t) {
+                            //return arc( interpolate(t) );
+                            return arc
+                                .innerRadius( interpolate_radius_inner(t) )
+                                .outerRadius( interpolate_radius_outer(t) )
+                                ( a )
+                                ;
+                        };
+                    })
+                    ;
+                g_piechart
+                    .attr("transform", "scale("+scale_start+")"  +" rotate("+rotation_start+")")
+                    .style("opacity", opacity_start)
+                    .transition()
+                    .delay(100)
+                    .duration(500)
+                    .ease("cubic-out")
+                    .attr("transform", "scale("+scale_end+")"  +" rotate("+rotation_end+")")
+                    .style("opacity", opacity_end)
+                    ;
+            }
+            //--------------------------------------------------
+            // style 3
+
+            function display_style3_piechart_initial(array){
+                // remove any existing arcs and do initial display
+                var current_arcs = 
+                    g_piechart
+                    .selectAll("#arc_current")
+                    .remove()
+                    ;
+                // create the arcs
+                paths = 
+                    g_piechart
+                    .selectAll("#arc_current")
+                    .data(pie(array))           
+                    .enter()
+                    .append("g")
+                    .attr("id", "arc_current")
+                    .attr("class", "arc")
+                    .append("path")
+                    .style("fill", function(d,i){ return arc_colors(i); })
+                    //.attr("d", function(d){ return arc(d); })
+                    ;
+                var d_radius_inner = -20;
+                var d_radius_outer = -80;
+                var scale_start = 1.5;
+                var scale_end = 1.0;
+                var rotation_start = 0;
+                var rotation_end = 0;
+                var opacity_start = 0.7;
+                var opacity_end = 1;
+                paths
+                    .transition()
+                    .delay(0)
+                    .duration(600)
+                    .ease("cubic-out")
+                    .attrTween("d", function(a){
+                        var interpolate_radius_inner = d3.interpolate(radius_inner + d_radius_inner, radius_inner);
+                        var interpolate_radius_outer = d3.interpolate(radius_outer + d_radius_outer, radius_outer);
+                        return function(t) {
+                            return arc
+                                .innerRadius( interpolate_radius_inner(t) )
+                                .outerRadius( interpolate_radius_outer(t) )
+                                ( a )
+                                ;
+                        };
+                    })
+                    ;
+                g_piechart
+                    .attr("transform", "scale("+scale_start+")"  +" rotate("+rotation_start+")")
+                    .style("opacity", opacity_start)
+                    .transition()
+                    .delay(50)
+                    .duration(500)
+                    .ease("cubic-out")
+                    .attr("transform", "scale("+scale_end+")"  +" rotate("+rotation_end+")")
+                    .style("opacity", opacity_end)
+                    ;
+            }
+            //--------------------------------------------------
+        }
+    </script>
+
+    <!--
+    this is from developer stats files including:
+    tools.js
+    slider.js
+    analytics.js
+    -->
+    <script>
+        //--------------------------------------------------
+        //--------------------------------------------------
+        //--------------------------------------------------
+        // from tools.js
+
+        function point(x, y) {
+            return { x:x, y:y };
+        }
+        var marginclass = function(l, r, t, b){
+            this.l = l ? l : 0;
+            this.r = r ? r : 0;
+            this.t = t ? t : 0;
+            this.b = b ? b : 0;
+            this.set = function(l, r, t, b){
+                this.l = l;
+                this.r = r;
+                this.t = t;
+                this.b = b;
+            };
+            this.set_all = function(val){
+                this.l = val;
+                this.r = val;
+                this.t = val;
+                this.b = val;
+            };
+            this.get_copy = function(){
+                return new marginclass(this.l, this.r, this.t, this.b);
+            }
+        }
+        var rectclass = function(){
+            this.x = 0;
+            this.y = 0;
+            this.w = 100;
+            this.h = 100;
+            this.m = new marginclass(10, 10, 10, 10);
+            this.c = "rgba(0,0,0, 1)";
+            this.set = function(x0, y0, w0, h0){
+                this.x = x0;
+                this.y = y0;
+                this.w = w0;
+                this.h = h0;
+            }
+            this.setpos = function(x0, y0){
+                this.x = x0;
+                this.y = y0;
+            }
+            this.setdims = function(w0, h0){
+                this.w = w0;
+                this.h = h0;
+            }
+            this.left = function() { return this.x; };
+            this.right = function() { return this.x + this.w; };
+            this.top = function() { return this.y; };
+            this.bottom = function() { return this.y + this.h; };
+            this.center = function() { return point(this.x + this.w / 2, this.y + this.h / 2); }
+            this.get_inrect = function() {
+                var inrect = new rectclass();
+                inrect.x = this.x + this.m.l;
+                inrect.y = this.y + this.m.t;
+                inrect.w = this.w - this.m.l - this.m.r;
+                inrect.h = this.h - this.m.t - this.m.b;
+                return inrect;
+            };
+            this.inside = function(x, y) {
+                if (this.left() < x) return false;
+                if (this.right() > x) return false;
+                if (this.top() < y) return false;
+                if (this.bottom() > y) return false;
+                return true;
+            };
+            this.append_to = function(parent_sel){
+                var sel = parent_sel.append("rect");
+                sel.attr("x", this.x);
+                sel.attr("y", this.y);
+                sel.attr("width", this.w);
+                sel.attr("height", this.h);
+                sel.attr("fill", this.c);
+                return sel;
+            }
+            this.get_copy = function(){
+                var copy = new rectclass();
+                copy.x = this.x;
+                copy.y = this.y;
+                copy.w = this.w;
+                copy.h = this.h;
+                copy.m = this.m.get_copy();
+                copy.c = this.c;
+                return copy;
+            }
+            this.copy_to = function(sel){
+                sel.attr("x", this.x);
+                sel.attr("y", this.y);
+                sel.attr("width", this.w);
+                sel.attr("height", this.h);
+                sel.attr("color", this.c)
+                return sel;
+            }
+            this.set_left = function(x0){
+                this.x = x0;
+                return this;
+            }
+            this.set_right = function(x0){
+                this.x = x0 - this.w;
+                return this;
+            }
+            this.set_top = function(y0){
+                this.y = y0;
+                return this;
+            }
+            this.set_bottom = function(y0){
+                this.y = y0 - this.h;
+                return this;
+            }
+            this.set_h = function(h0){
+                this.h = h0;
+                return this;
+            }
+            this.set_w = function(w0){
+                this.w = w0;
+                return this;
+            }
+            this.set_c = function(c0){
+                this.c = c0;
+                return this;
+            }
+            this.update_sel = function(){
+                if(this.sel){
+                    // return 
+                    this.sel = 
+                        this.sel
+                        .x(this.x)
+                        .y(this.y)
+                        .width(this.w)
+                        .height(this.h)
+                        .fill(this.c)
+                        ;
+                    return this.sel;
+                }
+                else{
+                    cout("rectclass->update_sel(): this.sel was not true");
+                }
+            }
+            this.update_geom_from_sel = function(){
+                if(this.sel){
+                    this.x = this.sel.attr("x");
+                    this.y = this.sel.attr("y");
+                    this.w = this.sel.attr("width");
+                    this.h = this.sel.attr("height");
+                    return this;
+                }
+                else{
+                    cout("rectclass->update_geom_from_sel(): this.sel was not true")
+                }
+            }
+        };
+        //--------------------------------------------------
+        //--------------------------------------------------
+        //--------------------------------------------------
+        // from slider.js
+
+        var sliderclass = function (parent_sel, sliderpos, flink, linktext) {
+            this.testvar = 0;
+            var g = parent_sel.append("g");
+            this.g = g;
+            g.attr("transform", "translate(" + sliderpos.x + "," + sliderpos.y + ")");
+            var w = 300;
+            var h = 20;
+            var boundingrect = new rectclass();
+            this.boundingrect = boundingrect;
+            // rect gets position 0,0, transform g determines location
+            boundingrect.set(0, 0, w, h);
+            boundingrect.c = "rgba(0,0,0, .1)";
+            boundingrect.m.set_all(2);
+            boundingrect.append_to(g);
+            var bar = boundingrect.get_inrect();
+            bar.m.set_all(2);
+            bar.c = "rgba(255,255,255, .85)";
+            bar.append_to(g);
+            var axis_g = g.append("g");// put the group for axis here beneath cursor
+            this.axis_g = axis_g;
+            var cursor_boundingrect = bar.get_inrect();
+            var cursor = bar.get_inrect();
+            this.cursor = cursor;// testing
+            var cursor_g = g.append("g");
+            this.cursor_g = cursor_g;//testing
+            cursor_g.x = cursor.x;
+            cursor_g.y = cursor.y;
+            cursor_g.attr("transform", "translate(" + cursor_g.x + "," + cursor_g.y + ")");
+            cursor.setpos(0, 0);
+            cursor.w = 20;
+            cursor.xmin = cursor_boundingrect.left() + cursor.w / 2;
+            cursor.xmax = cursor_boundingrect.right() - cursor.w / 2;
+            this.cursor_xmin = cursor.xmin;//testing
+            this.cursor_xmax = cursor.xmax;//testing
+            var domain = [cursor.xmin, cursor.xmax];
+            this.domain = domain;
+            var range = [0, 1];
+            this.range = range;
+            var scale = d3.scale.linear().domain(domain).range(range);
+            this.scale = scale;
+            cursor.sel = cursor.append_to(cursor_g);
+            var inverse_scale = d3.scale.linear().domain(range).range(domain);
+            this.inverse_scale = inverse_scale;
+            // axis
+            var weedaxis = d3.svg.axis()
+                .scale(inverse_scale)
+                .ticks(15)
+                .orient("bottom")
+                .tickFormat(function (d) { return d3.round(d, 2); })
+                .tickSubdivide(true)
+            ;
+            this.weedaxis = weedaxis;
+            axis_g
+               .attr("transform", "translate(" + boundingrect.left() + "," + (boundingrect.bottom() - 4) + ")")
+               .attr("class", "axis_slider_generic")
+               .call(weedaxis)
+            ;
+            // axis turned off by default
+            axis_g.attr("visibility", "hidden");
+            // returns linear value in [0,1]
+            var get_value = function () {
+                var x = cursor_g.x + cursor.w / 2;
+                return scale(x);
+            }
+            var val = get_value();
+            // text
+            var text_xoffset = 80;
+            var text_g = g.append("g");
+            var textx = boundingrect.right() + 10;
+            var texty = cursor_boundingrect.bottom();
+            text_g.attr("transform", "translate(" + textx + "," + texty + ")");
+            var valtext_sel = text_g.append("text").attr("class", "class_slidervaltext");
+            valtext_sel
+                .attr("text-anchor", "end")
+                .attr("x", text_xoffset - 10)
+            ;
+            //valtext_sel.attr("y", 3);
+            var update_valtext = function () {
+                //valtext_sel.text(d3.round(val,2));
+                valtext_sel.text(d3.format("0.02f")(val));
+            }
+            var linktext_sel = text_g.append("text").attr("class", "sliderlinktext").text(linktext);
+            //linktext_sel.attr("y", -linktext_sel.node().getBBox().height - 1);
+            linktext_sel.attr("x", text_xoffset);
+            // drag cursor
+            var draghandler_cursor_g = function () {
+                cursor_g.x += d3.event.dx;
+                cursor_g.x = Math.max(bar.get_inrect().left(), Math.min(cursor_g.x, bar.get_inrect().right() - cursor.w));
+                cursor_g.attr("transform", "translate(" + cursor_g.x + "," + cursor_g.y + ")");
+                val = get_value();
+                update_valtext();
+                // send val to the linked function that was passed in
+                flink(val);
+            }
+            var drag_cursor_g = d3.behavior.drag()
+                .on('dragstart', function () { d3.event.sourceEvent.stopPropagation(); })
+                .on('drag', draghandler_cursor_g)
+
+                .on('dragend', drag_end_handler)
+
+                ;
+            cursor_g.call(drag_cursor_g);
+            function drag_end_handler(){
+                console.log("drag ended.");
+                
+                //piechart.display_dynamic();
+                piechart.display_dynamic_2();
+
+            }
+            // dragging entire slider
+          //   var drag_g = d3.behavior.drag()
+                // .on('dragstart', function () {
+                //     d3.event.sourceEvent.stopPropagation();
+                // })
+                // .on('drag', function (d, i) {
+                //     sliderpos.x += d3.event.dx;
+                //     sliderpos.y += d3.event.dy;
+                //     g.attr("transform", "translate(" + sliderpos.x + "," + sliderpos.y + ")");
+                // });
+          //   g.call(drag_g);
+            this.setsliderfromval = function (val0) {
+                val = val0;
+                var x = scale.invert(val);
+                x -= cursor.w / 2;
+                cursor_g.x = x;
+                cursor_g.attr("transform", "translate(" + cursor_g.x + "," + cursor_g.y + ")");
+                update_valtext();
+            }
+        };
+        //--------------------------------------------------
+        //--------------------------------------------------
+        //--------------------------------------------------
+        // from analytics.js
+
+        function add_testcontrols(container_id){
+            var testcontrols_container = 
+                d3.select(document.createElement("div"))
+                .attr("id", "testcontrols_container")
+                .style("display", "inline-block")
+                .style("width", 600)
+                .style("height", 475)
+                ;
+            g_testcontrols_svg = 
+                testcontrols_container
+                .append("svg")
+                .attr("width", 600)
+                .attr("height", 475)
+                ;
+            document
+                .getElementById(container_id)
+                .appendChild(testcontrols_container.node())
+                ;
+            slider_svg_rect = new rectclass();
+            slider_svg_rect.set(0, 0, g_testcontrols_svg.attr("width"), g_testcontrols_svg.attr("height"));
+            slider_svg_rect.c = "rgba(0,0,0, .05)";
+            slider_svg_rect.append_to(g_testcontrols_svg);
+            var xpos = 60;
+            var ypos = 20;
+            var yseparation = 6;
+            //--------------------------------------------------
+            add_testslider_set2();
+            //--------------------------------------------------
+            function add_testslider_set2(){
+                //--------------------------------------------------
+                var linktext = "inner radius start";
+                var handler = function(val){ d_radius_inner = val; }
+                var s = new sliderclass( g_testcontrols_svg, point(xpos, ypos), handler, linktext );
+                s.range = [-60, 60];
+                s.scale.range(s.range);
+                s.setsliderfromval(d_radius_inner);
+
+                sliders.radius_inner = s;
+
+                //--------------------------------------------------
+                ypos += s.boundingrect.h + yseparation;
+                var linktext = "outer radius start";
+                var handler = function(val){ d_radius_outer = val; }
+                var s = new sliderclass( g_testcontrols_svg, point(xpos, ypos), handler, linktext );
+                s.range = [-160, 160];
+                s.scale.range(s.range);
+                s.setsliderfromval(d_radius_outer);
+
+                sliders.radius_outer = s;
+
+                //--------------------------------------------------
+                ypos += s.boundingrect.h + yseparation;
+                var linktext = "rotation start";
+                var handler = function(val){ rotation_start = val; }
+                var s = new sliderclass( g_testcontrols_svg, point(xpos, ypos), handler, linktext );
+                s.range = [-10, 10];
+                s.scale.range(s.range);
+                s.setsliderfromval(rotation_start);
+
+                sliders.rotation_start = s;
+
+                //--------------------------------------------------
+                ypos += s.boundingrect.h + yseparation;
+                var linktext = "scale start";
+                var handler = function(val){ scale_start = val; }
+                var s = new sliderclass( g_testcontrols_svg, point(xpos, ypos), handler, linktext );
+                s.range = [ 0.1, 2];
+                s.scale.range(s.range);
+                s.setsliderfromval(scale_start);
+
+                sliders.scale_start = s;
+
+                //--------------------------------------------------
+                ypos += s.boundingrect.h + yseparation;
+                var linktext = "scale end";
+                var handler = function(val){ scale_end = val; }
+                var s = new sliderclass( g_testcontrols_svg, point(xpos, ypos), handler, linktext );
+                s.range = [ 0.1, 2];
+                s.scale.range(s.range);
+                s.setsliderfromval(scale_end);
+
+                sliders.scale_end = s;
+
+                //--------------------------------------------------
+                ypos += s.boundingrect.h + yseparation;
+                var linktext = "opacity start";
+                var handler = function(val){ opacity_start = val; }
+                var s = new sliderclass( g_testcontrols_svg, point(xpos, ypos), handler, linktext );
+                s.range = [0, 1];
+                s.scale.range(s.range);
+                s.setsliderfromval(opacity_start);
+
+                sliders.opacity_start = s;
+
+                //--------------------------------------------------
+                ypos += s.boundingrect.h + yseparation;
+                var linktext = "opacity end";
+                var handler = function(val){ opacity_end = val; }
+                var s = new sliderclass( g_testcontrols_svg, point(xpos, ypos), handler, linktext );
+                s.range = [0, 1];
+                s.scale.range(s.range);
+                s.setsliderfromval(opacity_end);
+
+                sliders.opacity_end = s;
+
+                //--------------------------------------------------
+                //--------------------------------------------------
+                ypos += s.boundingrect.h + yseparation;
+                var linktext = "radius delay";
+                var handler = function(val){ delay_radius = val; }
+                var s = new sliderclass( g_testcontrols_svg, point(xpos, ypos), handler, linktext );
+                s.range = [0, 600];
+                s.scale.range(s.range);
+                s.setsliderfromval(delay_radius);
+
+                sliders.delay_radius = s;
+
+                //--------------------------------------------------
+                ypos += s.boundingrect.h + yseparation;
+                var linktext = "radius duration";
+                var handler = function(val){ duration_radius = val; }
+                var s = new sliderclass( g_testcontrols_svg, point(xpos, ypos), handler, linktext );
+                s.range = [0, 1600];
+                s.scale.range(s.range);
+                s.setsliderfromval(duration_radius);
+
+                sliders.duration_radius = s;
+
+                //--------------------------------------------------
+                ypos += s.boundingrect.h + yseparation;
+                var linktext = "transform delay";
+                var handler = function(val){ delay_transform = val; }
+                var s = new sliderclass( g_testcontrols_svg, point(xpos, ypos), handler, linktext );
+                s.range = [0, 600];
+                s.scale.range(s.range);
+                s.setsliderfromval(delay_transform);
+
+                sliders.delay_transform = s;
+
+                //--------------------------------------------------
+                ypos += s.boundingrect.h + yseparation;
+                var linktext = "transform duration";
+                var handler = function(val){ duration_transform = val; }
+                var s = new sliderclass( g_testcontrols_svg, point(xpos, ypos), handler, linktext );
+                s.range = [0, 1600];
+                s.scale.range(s.range);
+                s.setsliderfromval(duration_transform);
+
+                sliders.duration_transform = s;
+
+                //--------------------------------------------------
+                ypos += s.boundingrect.h + yseparation;
+                var linktext = "crush arcs";
+                var handler = function(val){ crush_arcs = val; }
+                var s = new sliderclass( g_testcontrols_svg, point(xpos, ypos), handler, linktext );
+                s.range = [0, 1];
+                s.scale.range(s.range);
+                s.setsliderfromval(crush_arcs);
+
+                sliders.crush_arcs = s;
+
+                //--------------------------------------------------
+                //--------------------------------------------------
+                ypos += s.boundingrect.h + yseparation + 30;
+                var buttontranslatepos = xpos;
+                var buttonxseparation = 80;
+                var buttoncount = 1;
+                buttonlist = [];
+                //--------------------------------------------------
+                // preset buttons
+                //--------------------------------------------------
+                var button = g_testcontrols_svg
+                    .append("g")
+                    .attr("transform", "translate(" + buttontranslatepos + "," + ypos + ")")
+                    ;
+                button
+                    .append("rect")
+                    .attr("width", "60px")
+                    .attr("height", "30px")
+                    .attr("x", "-3px")
+                    .attr("y", "-15px")
+                    .attr("fill", "rgba(0,0,0, .3)")
+                    .style("cursor", "pointer")
+                    ;
+                button
+                    .append("text")
+                    .text("preset " + buttoncount)
+                    .style("fill", "rgba(255,255,255, 1)")
+                    .style("cursor", "pointer")
+                    ;
+                button.execute = function(){
+                    d_radius_inner = -20;
+                    d_radius_outer = -80;
+                    scale_start = 1.5;
+                    scale_end = 1.0;
+                    rotation_start = 0;
+                    rotation_end = 0;
+                    opacity_start = 0.7;
+                    opacity_end = 1;
+                    delay_radius = 0;
+                    duration_radius = 600;
+                    delay_transform = 50;
+                    duration_transform = 500;
+                    crush_arcs = 1;
+                    sliders.radius_inner.setsliderfromval(d_radius_inner);
+                    sliders.radius_outer.setsliderfromval(d_radius_outer);
+                    sliders.scale_start.setsliderfromval(scale_start);
+                    sliders.scale_end.setsliderfromval(scale_end);
+                    sliders.rotation_start.setsliderfromval(rotation_start);
+                    sliders.opacity_start.setsliderfromval(opacity_start);
+                    sliders.opacity_end.setsliderfromval(opacity_end);
+                    sliders.delay_radius.setsliderfromval(delay_radius);
+                    sliders.duration_radius.setsliderfromval(duration_radius);
+                    sliders.delay_transform.setsliderfromval(delay_transform);
+                    sliders.duration_transform.setsliderfromval(duration_transform);
+                    sliders.crush_arcs.setsliderfromval(crush_arcs);
+                    piechart.display_dynamic_2();
+                }
+                button
+                    .on("click", function() {
+                        button.execute();
+                        d3.event.stopPropagation();
+                    });
+                buttonlist.push(button);
+                //--------------------------------------------------
+                buttontranslatepos += buttonxseparation;
+                buttoncount++;
+                var button = g_testcontrols_svg
+                    .append("g")
+                    .attr("transform", "translate(" + buttontranslatepos + "," + ypos + ")")
+                    ;
+                button
+                    .append("rect")
+                    .attr("width", "60px")
+                    .attr("height", "30px")
+                    .attr("x", "-3px")
+                    .attr("y", "-15px")
+                    .attr("fill", "rgba(0,0,0, .3)")
+                    .style("cursor", "pointer")
+                    ;
+                button
+                    .append("text")
+                    .text("preset " + buttoncount)
+                    .style("fill", "rgba(255,255,255, 1)")
+                    .style("cursor", "pointer")
+                    ;
+                button.execute = function(){
+                    d_radius_inner = -32.21;
+                    d_radius_outer = 104.71;
+                    scale_start = 0.1;
+                    scale_end = 0.98;
+                    rotation_start = -10;
+                    rotation_end = 0;
+                    opacity_start = 0.43;
+                    opacity_end = 1;
+                    delay_radius = 0;
+                    duration_radius = 717.65;
+                    delay_transform = 0;
+                    duration_transform = 547.06;
+                    crush_arcs = 0.49;
+                    sliders.radius_inner.setsliderfromval(d_radius_inner);
+                    sliders.radius_outer.setsliderfromval(d_radius_outer);
+                    sliders.scale_start.setsliderfromval(scale_start);
+                    sliders.scale_end.setsliderfromval(scale_end);
+                    sliders.rotation_start.setsliderfromval(rotation_start);
+                    sliders.opacity_start.setsliderfromval(opacity_start);
+                    sliders.opacity_end.setsliderfromval(opacity_end);
+                    sliders.delay_radius.setsliderfromval(delay_radius);
+                    sliders.duration_radius.setsliderfromval(duration_radius);
+                    sliders.delay_transform.setsliderfromval(delay_transform);
+                    sliders.duration_transform.setsliderfromval(duration_transform);
+                    sliders.crush_arcs.setsliderfromval(crush_arcs);
+                    piechart.display_dynamic_2();
+                }
+                button
+                    .on("click", function() {
+                        button.execute();
+                        d3.event.stopPropagation();
+                    });
+                buttonlist.push(button);
+                //--------------------------------------------------
+                buttontranslatepos += buttonxseparation;
+                buttoncount++;
+                var button = g_testcontrols_svg
+                    .append("g")
+                    .attr("transform", "translate(" + buttontranslatepos + "," + ypos + ")")
+                    ;
+                button
+                    .append("rect")
+                    .attr("width", "60px")
+                    .attr("height", "30px")
+                    .attr("x", "-3px")
+                    .attr("y", "-15px")
+                    .attr("fill", "rgba(0,0,0, .3)")
+                    .style("cursor", "pointer")
+                    ;
+                button
+                    .append("text")
+                    .text("preset " + buttoncount)
+                    .style("fill", "rgba(255,255,255, 1)")
+                    .style("cursor", "pointer")
+                    ;
+                button.execute = function(){
+                    d_radius_inner = -60;
+                    d_radius_outer = -62.35;
+                    rotation_start = -9.85;
+                    scale_start = .94;
+                    scale_end = 1;
+                    opacity_start = 0;
+                    opacity_end = 1;
+                    delay_radius = 0;
+                    duration_radius = 664.71;
+                    delay_transform = 0;
+                    duration_transform = 0;
+                    crush_arcs = 0.41;
+                    rotation_end = 0;
+                    sliders.radius_inner.setsliderfromval(d_radius_inner);
+                    sliders.radius_outer.setsliderfromval(d_radius_outer);
+                    sliders.scale_start.setsliderfromval(scale_start);
+                    sliders.scale_end.setsliderfromval(scale_end);
+                    sliders.rotation_start.setsliderfromval(rotation_start);
+                    sliders.opacity_start.setsliderfromval(opacity_start);
+                    sliders.opacity_end.setsliderfromval(opacity_end);
+                    sliders.delay_radius.setsliderfromval(delay_radius);
+                    sliders.duration_radius.setsliderfromval(duration_radius);
+                    sliders.delay_transform.setsliderfromval(delay_transform);
+                    sliders.duration_transform.setsliderfromval(duration_transform);
+                    sliders.crush_arcs.setsliderfromval(crush_arcs);
+                    piechart.display_dynamic_2();
+                }
+                button
+                    .on("click", function() {
+                        button.execute();
+                        d3.event.stopPropagation();
+                    });
+                buttonlist.push(button);
+                //--------------------------------------------------
+                buttontranslatepos += buttonxseparation;
+                buttoncount++;
+                var button = g_testcontrols_svg
+                    .append("g")
+                    .attr("transform", "translate(" + buttontranslatepos + "," + ypos + ")")
+                    ;
+                button
+                    .append("rect")
+                    .attr("width", "60px")
+                    .attr("height", "30px")
+                    .attr("x", "-3px")
+                    .attr("y", "-15px")
+                    .attr("fill", "rgba(0,0,0, .3)")
+                    .style("cursor", "pointer")
+                    ;
+                button
+                    .append("text")
+                    .text("preset " + buttoncount)
+                    .style("fill", "rgba(255,255,255, 1)")
+                    .style("cursor", "pointer")
+                    ;
+                button.execute = function(){
+                    d_radius_inner = -20.00;
+                    d_radius_outer = 64.71;
+                    rotation_start = 10.00;
+                    scale_start = 0.63;
+                    scale_end = 1;
+                    opacity_start = 0.04;
+                    opacity_end = 1;
+                    delay_radius = 0;
+                    duration_radius = 600.00;
+                    delay_transform = 50.00;
+                    duration_transform = 500.00;
+                    crush_arcs = 1.00;
+                    rotation_end = 0;
+                    sliders.radius_inner.setsliderfromval(d_radius_inner);
+                    sliders.radius_outer.setsliderfromval(d_radius_outer);
+                    sliders.scale_start.setsliderfromval(scale_start);
+                    sliders.scale_end.setsliderfromval(scale_end);
+                    sliders.rotation_start.setsliderfromval(rotation_start);
+                    sliders.opacity_start.setsliderfromval(opacity_start);
+                    sliders.opacity_end.setsliderfromval(opacity_end);
+                    sliders.delay_radius.setsliderfromval(delay_radius);
+                    sliders.duration_radius.setsliderfromval(duration_radius);
+                    sliders.delay_transform.setsliderfromval(delay_transform);
+                    sliders.duration_transform.setsliderfromval(duration_transform);
+                    sliders.crush_arcs.setsliderfromval(crush_arcs);
+                    piechart.display_dynamic_2();
+                }
+                button
+                    .on("click", function() {
+                        button.execute();
+                        d3.event.stopPropagation();
+                    });
+                buttonlist.push(button);
+                //--------------------------------------------------
+                buttontranslatepos += buttonxseparation;
+                buttoncount++;
+                var button = g_testcontrols_svg
+                    .append("g")
+                    .attr("transform", "translate(" + buttontranslatepos + "," + ypos + ")")
+                    ;
+                button
+                    .append("rect")
+                    .attr("width", "60px")
+                    .attr("height", "30px")
+                    .attr("x", "-3px")
+                    .attr("y", "-15px")
+                    .attr("fill", "rgba(0,0,0, .3)")
+                    .style("cursor", "pointer")
+                    ;
+                button
+                    .append("text")
+                    .text("preset " + buttoncount)
+                    .style("fill", "rgba(255,255,255, 1)")
+                    .style("cursor", "pointer")
+                    ;
+                button.execute = function(){
+                    d_radius_inner = -32.21;
+                    d_radius_outer = 104.71;
+                    rotation_start = -10.00;
+                    scale_start = 0.10;
+                    scale_end = 1;
+                    opacity_start = 0.10;
+                    opacity_end = 1;
+                    delay_radius = 0;
+                    duration_radius = 0.00;
+                    delay_transform = 0;
+                    duration_transform = 694.12;
+                    crush_arcs = 0;
+                    rotation_end = 0;
+                    sliders.radius_inner.setsliderfromval(d_radius_inner);
+                    sliders.radius_outer.setsliderfromval(d_radius_outer);
+                    sliders.scale_start.setsliderfromval(scale_start);
+                    sliders.scale_end.setsliderfromval(scale_end);
+                    sliders.rotation_start.setsliderfromval(rotation_start);
+                    sliders.opacity_start.setsliderfromval(opacity_start);
+                    sliders.opacity_end.setsliderfromval(opacity_end);
+                    sliders.delay_radius.setsliderfromval(delay_radius);
+                    sliders.duration_radius.setsliderfromval(duration_radius);
+                    sliders.delay_transform.setsliderfromval(delay_transform);
+                    sliders.duration_transform.setsliderfromval(duration_transform);
+                    sliders.crush_arcs.setsliderfromval(crush_arcs);
+                    piechart.display_dynamic_2();
+                }
+                button
+                    .on("click", function() {
+                        button.execute();
+                        d3.event.stopPropagation();
+                    });
+                buttonlist.push(button);
+            }
+
+        }
+        function triggerpreset1(){
+
+        }
+        //--------------------------------------------------
+        //--------------------------------------------------
+        //--------------------------------------------------
+    </script>
+
+
+</head>
+<body>
+    <div id="report_container" style="text-align:center; "></div>
+    <div id="id_generic_slider" style="display:inline-block; "></div>
+    <script>
+        var file_url = "{{ hitsByCategoryFile.href }}" + "?redirect=proxy";
+        render_smallRNA_layout("report_container");
+        add_testcontrols("report_container");
+        $("#testcontrols_container").css("display", "none");
+        var currentbutton = -1;
+        playnextpreset();
+        function playnextpreset(){
+            currentbutton++;
+            if(currentbutton >= buttonlist.length) currentbutton = 0;
+            buttonlist[currentbutton].execute();
+            setTimeout(playnextpreset, 2000);
+        }
+    </script>
+</body>
+</html>

@@ -176,7 +176,7 @@
             var bgcolor = "rgba(0,0,0, .02)";
             var default_margin = 30;
             var svg_rect = {        
-                width: 600
+                width: 650
                 ,height: charts_container_height
                 ,margin: {
                     top: default_margin
@@ -252,8 +252,8 @@
                 svg.append("g")
                 .attr("class", "msr-piechart")        
                 .attr("transform", "translate(" + 
-                    (radius_outer + piechart_margin_left) + "," + 
-                    (radius_outer + svg_rect.header_height + piechart_margin_top) + ")")
+                    (radius_outer + piechart_margin_left + 35) + "," + 
+                    (radius_outer + svg_rect.header_height + piechart_margin_top - 20) + ")")
                 ;
             var g_piechart = 
                 g_graphics.append("g")

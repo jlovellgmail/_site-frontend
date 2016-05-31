@@ -13,9 +13,40 @@ jQuery(document).ready(function($) {
 		}
 	}
 	function resizer_iframe() {
+		// set aspect ratio from width/height attributes
+		var iframe = $('#slide iframe');
+		var widthoverheight;
+		if(iframe[0].hasAttribute("widthoverheight")){
+			widthoverheight = iframe.attr("widthoverheight");
+		}
+		else {
+			iframe.attr("width-original", iframe.attr("width"));
+			iframe.attr("height-original", iframe.attr("height"));
+			widthoverheight = iframe.attr("width") / iframe.attr("height");
+			iframe.attr("widthoverheight", widthoverheight);
+		}
+		// resize based on width
+		var targetwidth = $('#slide').width() - 200;
+		if( iframe.width() > targetwidth) {
+			var width_new = targetwidth;
+			var height_new = (1.0 / widthoverheight) * width_new;
+			iframe.attr("width", width_new);
+			iframe.attr("height", height_new);
+		}
+		else if( iframe.width() < targetwidth && iframe.width() < iframe.attr("width-original") ) {
+			var width_new = targetwidth;
+			var height_new = (1.0 / widthoverheight) * width_new;
+			iframe.attr("width", width_new);
+			iframe.attr("height", height_new);
+		}
+		// recenter in window
 		var margin = ($('#slide').height() - $("#slide iframe").height())/2;
 		$('#slide iframe').css('margin-top', margin);
 	}
+	$( window ).resize(function() {
+		JL_resizer();
+		resizer_iframe();
+	});
 
 
 	var prefix = "http://lovell.ipage.com/design/images/";

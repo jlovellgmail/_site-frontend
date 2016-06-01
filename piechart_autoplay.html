@@ -1526,19 +1526,19 @@
                     .style("cursor", "pointer")
                     ;
                 button.execute = function(){
-                    d_radius_inner = -32.21;
-                    d_radius_outer = 104.71;
-                    scale_start = 0.1;
-                    scale_end = 0.98;
-                    rotation_start = -10;
-                    rotation_end = 0;
-                    opacity_start = 0.43;
+                    d_radius_inner = -60;
+                    d_radius_outer = -62.35;
+                    rotation_start = -9.85;
+                    scale_start = .94;
+                    scale_end = 1;
+                    opacity_start = 0;
                     opacity_end = 1;
                     delay_radius = 0;
-                    duration_radius = 717.65;
+                    duration_radius = 664.71;
                     delay_transform = 0;
-                    duration_transform = 547.06;
-                    crush_arcs = 0.49;
+                    duration_transform = 0;
+                    crush_arcs = 0.41;
+                    rotation_end = 0;
                     sliders.radius_inner.setsliderfromval(d_radius_inner);
                     sliders.radius_outer.setsliderfromval(d_radius_outer);
                     sliders.scale_start.setsliderfromval(scale_start);
@@ -1582,19 +1582,21 @@
                     .style("cursor", "pointer")
                     ;
                 button.execute = function(){
-                    d_radius_inner = -60;
-                    d_radius_outer = -62.35;
-                    rotation_start = -9.85;
-                    scale_start = .94;
-                    scale_end = 1;
-                    opacity_start = 0;
+                    d_radius_inner = -32.21;
+                    //d_radius_outer = 104.71;
+                    d_radius_outer = 70.59;
+                    scale_start = 0.1;
+                    scale_end = 0.98;
+                    //rotation_start = -10;
+                    rotation_start = -80;
+                    rotation_end = 0;
+                    opacity_start = 0.43;
                     opacity_end = 1;
                     delay_radius = 0;
-                    duration_radius = 664.71;
+                    duration_radius = 717.65;
                     delay_transform = 0;
-                    duration_transform = 0;
-                    crush_arcs = 0.41;
-                    rotation_end = 0;
+                    duration_transform = 547.06;
+                    crush_arcs = 0.49;
                     sliders.radius_inner.setsliderfromval(d_radius_inner);
                     sliders.radius_outer.setsliderfromval(d_radius_outer);
                     sliders.scale_start.setsliderfromval(scale_start);
@@ -1734,6 +1736,17 @@
         //--------------------------------------------------
     </script>
 
+    <script>
+        var proceed = true;
+        function stop(){
+            proceed = false;
+        }
+        function start(){
+            proceed = true;
+            playnextpreset();
+        }
+    </script>
+
 
 </head>
 <body>
@@ -1750,7 +1763,9 @@
             currentbutton++;
             if(currentbutton >= buttonlist.length) currentbutton = 0;
             buttonlist[currentbutton].execute();
-            setTimeout(playnextpreset, 2000);
+            if(proceed){
+                setTimeout(playnextpreset, 2000);
+            }
         }
     </script>
 </body>

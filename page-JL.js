@@ -25,19 +25,40 @@ jQuery(document).ready(function($) {
 			widthoverheight = iframe.attr("width") / iframe.attr("height");
 			iframe.attr("widthoverheight", widthoverheight);
 		}
-		// resize based on width
-		var targetwidth = $('#slide').width() - 200;
-		if( iframe.width() > targetwidth) {
-			var width_new = targetwidth;
-			var height_new = (1.0 / widthoverheight) * width_new;
-			iframe.attr("width", width_new);
-			iframe.attr("height", height_new);
+
+		var slide = $('#slide');
+		var widthoverheight_slide = slide.width() / slide.height();
+		if(widthoverheight_slide < widthoverheight){
+			// resize based on width
+			var targetwidth = $('#slide').width() - 200;
+			if( iframe.width() > targetwidth) {
+				var width_new = targetwidth;
+				var height_new = (1.0 / widthoverheight) * width_new;
+				iframe.attr("width", width_new);
+				iframe.attr("height", height_new);
+			}
+			else if( iframe.width() < targetwidth && iframe.width() < iframe.attr("width-original") ) {
+				var width_new = targetwidth;
+				var height_new = (1.0 / widthoverheight) * width_new;
+				iframe.attr("width", width_new);
+				iframe.attr("height", height_new);
+			}
 		}
-		else if( iframe.width() < targetwidth && iframe.width() < iframe.attr("width-original") ) {
-			var width_new = targetwidth;
-			var height_new = (1.0 / widthoverheight) * width_new;
-			iframe.attr("width", width_new);
-			iframe.attr("height", height_new);
+		else {
+			// resize based on height
+			var targetheight = $('#slide').height() - 100;
+			if( iframe.height() > targetheight) {
+				var height_new = targetheight;
+				var width_new = widthoverheight * height_new;
+				iframe.attr("width", width_new);
+				iframe.attr("height", height_new);
+			}
+			else if( iframe.height() < targetheight && iframe.height() < iframe.attr("height-original") ) {
+				var height_new = targetheight;
+				var width_new = widthoverheight * height_new;
+				iframe.attr("width", width_new);
+				iframe.attr("height", height_new);
+			}
 		}
 		// recenter in window
 		var margin = ($('#slide').height() - $("#slide iframe").height())/2;

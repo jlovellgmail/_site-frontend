@@ -53,13 +53,8 @@ a:hover.overlay {
 .container {
 	display: inline-block;
 	margin-top: 10px;
-	width: 924px;
+	width: 700px;
 	line-height: 20px;
-	/*	
-	font-family: courier;
-	letter-spacing: .1px;
-	font-size: 15px;
-	*/
 }
 .name {
 	font-weight: bold;
@@ -79,8 +74,61 @@ a:hover.overlay {
 }
 .subtitle {
 	font-family: sans-serif;
-	margin-top: 20px;
+	margin-top: 11px;
 	font-size: 15px;
 	font-weight: normal;
-	color: orange;
+	color: rgba(101,201,18, 1);
 }
+
+
+/* 160605 */
+.nav {
+	padding-left: 40px;
+	padding-right: 40px;
+	font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+	font-size: 15px;
+	color: #c0c6e0;
+	text-align: right;
+}
+.nav a {
+    color: #c0c6e0;
+    text-decoration: none;
+}
+.nav a.current {
+    text-decoration: underline;
+    color: #666;
+    font-weight: bold;
+}
+.nav a:hover {
+    color: #a0a4bb;
+}
+.name {
+    //margin: 0 20px;
+    margin-left: 15px;
+    margin-top: 21px;
+    color: black;
+    font-weight: bold;
+    display: inline-block;
+}
+.contact {
+    margin: 0 20px;
+    margin-left: 15px;
+    margin-top: 21px;
+    display: inline-block;
+}
+.text {
+	margin-top: 20px;
+	margin-bottom: 40px;
+}
+.contactinfo {
+	margin-top: 6px;
+}
+
+
+
+
+
+
+
+
+

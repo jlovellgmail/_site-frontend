@@ -58,10 +58,10 @@
 						The software builds a representation of a photograph by arranging groups of shapes.
 						<br>
 						<br>
-						This involves a stochastic process which tries random changes to the arrangement. We capture an image of the arrangement and compare it with the target image we're trying to render. If the random changes have created a better image than what we had before, then the new changes are retained. If the changes made the rendering worse then they are thrown out. Almost every time, the changes make the rendering worse. This is like mutation in biological organisms. A mutation usually damages the organism and makes it worse at staying alive. But occassionally a mutation produces an advantage for the animal. The change is then retained when the animal reproduces.
+						This involves a stochastic process which tries random changes to the arrangement. We capture an image of the arrangement and compare it with the target image we're trying to render. If the random changes have created a better rendering than what we had before, then the new changes are retained. If the changes made the rendering worse then they are thrown out. Almost every time, the changes make the rendering worse. This is like mutation in biological organisms. A mutation usually damages the organism and makes it worse at staying alive. But occassionally a mutation produces an advantage for the animal. The change is then retained when the animal reproduces.
 						<br>
 						<br>
-						Just like in nature, creating a rendering of a photograph with this process involves many generations where the computer tries random changes. Billions of attempted changes are rejected and only rarely does a better rendering appear. Of course, unlike nature, the computer can do this very quickly.
+						Just like in nature, creating a rendering of a photograph with this process involves many generations where the computer tries random changes. Billions of attempts are rejected and only rarely does a better rendering appear. Of course, unlike nature, the computer can do this very quickly.
 					</div>
 					<div class="image">
 						<iframe src="https://player.vimeo.com/video/104258367?autoplay=1&loop=1&autopause=0&title=0&byline=0&portrait=0" width="700" height="525" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
@@ -73,7 +73,11 @@
 						Genetic programs
 					</div>
 					<div class="text">
-						Marks in the drawing are created by deforming 2D grids of lines in 3D space with genetic programs. <a href="../gp/index.html" class="embeddedlink">More on this method of deformation can be found here</a>. Shapes are then arranged randomly to configure the drawing. There's an inherent tension between the genetic program deformations and the overall constrained goal of a realistic rendering. Genetic programs can be configured and evolved to create wildly expansive shapes and patterns, which are also then being selected for how well they conforom to the goals of the community as a whole.
+
+						Each individual shape in the group is deformed by functions that resemble genetic programs. These functions are represented as trees, and mutation involves breaking off and regenerating branches of the tree. The shapes themselves start out as lines arranged regularly in a 2D plane, like the lines on graph paper. The genetic programs take the original coordinates of these lines as input, and their output is to move the line somewhere else in three dimensional space. <a href="../gp/index.html" class="embeddedlink">More on this method of deformation can be found here</a>. The deformed shapes are then arranged randomly to create the rendering. 
+						<br>
+						<br>
+						There's an inherent tension between the genetic program deformations and the overall constrained goal of a realistic rendering. Genetic programs are functions that want to create wildly expansive shapes and patterns. But the shapes are being selected for how well they conform to the goal.
 					</div>
 					<!-- - - - - - - - - - - - - - - - - - - - - - - - - - -->
 				</div>
